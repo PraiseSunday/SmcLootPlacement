@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMC Loot Map</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="viewport"></div>
+
+<div id="hud">
+  <div id="stats"></div>
+</div>
+
+<div id="panel">
+  <div id="panel-header">
+    <strong>Chest pins</strong>
+    <button id="add-btn">+ Add pin</button>
+  </div>
+  <p class="hint">No shared server yet — pins save to your browser only. Use Export / Import to share a set with others.</p>
+  <div id="pin-list"></div>
+  <div id="io-row">
+    <button id="export-btn">Export JSON</button>
+    <button id="import-btn">Import JSON</button>
+    <input id="import-file" type="file" accept="application/json" style="display:none">
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

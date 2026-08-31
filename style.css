@@ -1,0 +1,181 @@
+:root {
+  color-scheme: dark;
+  --bg: #0d0f14;
+  --panel: #161a22;
+  --border: #2a3140;
+  --text: #dfe4ee;
+  --muted: #8b93a5;
+  --accent: #4fa8ff;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 14px/1.4 system-ui, sans-serif;
+  overflow: hidden;
+}
+
+#viewport {
+  position: absolute;
+  inset: 0;
+}
+
+#viewport canvas {
+  display: block;
+  cursor: grab;
+}
+#viewport.placing canvas {
+  cursor: crosshair;
+}
+
+#hud {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: rgba(13, 15, 20, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+#panel {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 300px;
+  max-height: calc(100vh - 20px);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.hint {
+  margin: 0;
+  padding: 8px 12px;
+  font-size: 11px;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+#pin-list {
+  overflow-y: auto;
+  flex: 1;
+  padding: 4px;
+}
+
+.pin-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.pin-row:hover {
+  background: #1f2530;
+}
+
+.pin-row .label {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pin-row .votes {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pin-row button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 2px 5px;
+}
+.pin-row button:hover {
+  color: var(--text);
+}
+
+#io-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+
+button {
+  background: #1f2530;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  cursor: pointer;
+}
+button:hover {
+  border-color: var(--accent);
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06131f;
+  font-weight: 600;
+}
+
+#io-row button {
+  flex: 1;
+}
+
+#pin-editor {
+  position: absolute;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+  width: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#pin-editor input, #pin-editor select, #pin-editor textarea {
+  background: #0d0f14;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 5px 6px;
+  font: inherit;
+}
+#pin-editor textarea {
+  resize: vertical;
+  min-height: 40px;
+}
+#pin-editor .row {
+  display: flex;
+  gap: 6px;
+}
+#pin-editor .row button {
+  flex: 1;
+}
