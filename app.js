@@ -54,32 +54,39 @@ scene.add(chunkGroup);
 const pinGroup = new THREE.Group();
 scene.add(pinGroup);
 
+// Height is normalized PER BUILDING (baked into a "heightT" vertex attribute at
+// chunk-load time, see loadChunk) rather than against the whole-map Y range —
+// one tall tower elsewhere on the map would otherwise crush every ordinary
+// building into the bottom of the ramp. Lighting uses computed vertex normals
+// so walls/roofs read as distinct facets instead of flat height-tinted blobs.
 const heightMaterial = new THREE.ShaderMaterial({
-  uniforms: {
-    minY: { value: 0 },
-    maxY: { value: 1 },
-  },
   vertexShader: `
-    varying float vY;
+    attribute float heightT;
+    varying float vT;
+    varying vec3 vNormal;
     void main() {
-      vY = position.y;
+      vT = heightT;
+      vNormal = normalize(normalMatrix * normal);
       gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
   `,
   fragmentShader: `
-    uniform float minY;
-    uniform float maxY;
-    varying float vY;
+    varying float vT;
+    varying vec3 vNormal;
     vec3 ramp(float t) {
-      vec3 low = vec3(0.16, 0.22, 0.30);
-      vec3 mid = vec3(0.30, 0.55, 0.55);
-      vec3 high = vec3(0.85, 0.80, 0.55);
+      vec3 low = vec3(0.35, 0.55, 0.60);
+      vec3 mid = vec3(0.45, 0.70, 0.65);
+      vec3 high = vec3(0.90, 0.85, 0.60);
       if (t < 0.5) return mix(low, mid, t * 2.0);
       return mix(mid, high, (t - 0.5) * 2.0);
     }
     void main() {
-      float t = clamp((vY - minY) / max(maxY - minY, 1.0), 0.0, 1.0);
-      gl_FragColor = vec4(ramp(t), 1.0);
+      vec3 base = ramp(clamp(vT, 0.0, 1.0));
+      vec3 lightDir = normalize(vec3(0.4, 1.0, 0.3));
+      vec3 n = normalize(vNormal);
+      if (!gl_FrontFacing) n = -n;
+      float diffuse = 0.55 + 0.45 * max(dot(n, lightDir), 0.0);
+      gl_FragColor = vec4(base * diffuse, 1.0);
     }
   `,
   side: THREE.DoubleSide,
@@ -133,8 +140,21 @@ async function loadChunk(entry) {
   const indexOffset = 12 + vcount * 3 * 4;
   const rawIndex = new Uint32Array(buf, indexOffset, fcount * 3);
 
+  let minY = Infinity, maxY = -Infinity;
+  for (let i = 1; i < positions.length; i += 3) {
+    const y = positions[i];
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const span = Math.max(maxY - minY, 1);
+  const heightT = new Float32Array(vcount);
+  for (let i = 0; i < vcount; i++) {
+    heightT[i] = (positions[i * 3 + 1] - minY) / span;
+  }
+
   const geom = new THREE.BufferGeometry();
   geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geom.setAttribute("heightT", new THREE.BufferAttribute(heightT, 1));
   geom.setIndex(new THREE.BufferAttribute(rawIndex, 1));
   geom.computeVertexNormals();
 
@@ -394,8 +414,6 @@ fitBtn.onclick = fitToMap;
 
 async function boot() {
   manifest = await fetch("data/manifest.json").then((r) => r.json());
-  heightMaterial.uniforms.minY.value = manifest.bbox.minY;
-  heightMaterial.uniforms.maxY.value = manifest.bbox.maxY;
 
   onResize();
   fitToMap();
