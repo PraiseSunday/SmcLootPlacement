@@ -11,12 +11,16 @@
 
 <div id="hud">
   <div id="stats"></div>
+  <div id="controls-hint">Drag to pan &middot; scroll to zoom &middot; "Fit map" for the full overview &middot; "+ Add pin" then click a spot to mark loot</div>
 </div>
 
 <div id="panel">
   <div id="panel-header">
     <strong>Chest pins</strong>
-    <button id="add-btn">+ Add pin</button>
+    <div id="panel-actions">
+      <button id="fit-btn" title="Zoom out to see the whole map">Fit map</button>
+      <button id="add-btn">+ Add pin</button>
+    </div>
   </div>
   <p class="hint">No shared server yet — pins save to your browser only. Use Export / Import to share a set with others.</p>
   <div id="pin-list"></div>

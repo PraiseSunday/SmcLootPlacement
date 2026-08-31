@@ -9,6 +9,7 @@ const viewportEl = document.getElementById("viewport");
 const statsEl = document.getElementById("stats");
 const panelListEl = document.getElementById("pin-list");
 const addBtn = document.getElementById("add-btn");
+const fitBtn = document.getElementById("fit-btn");
 const exportBtn = document.getElementById("export-btn");
 const importBtn = document.getElementById("import-btn");
 const importFile = document.getElementById("import-file");
@@ -117,7 +118,12 @@ async function loadChunk(entry) {
   }
   const placeholder = { mesh: null, entry, lastSeen: frame, loading: true };
   loadedChunks.set(key, placeholder);
-  const buf = await fetch(entry.file).then((r) => r.arrayBuffer());
+  const res = await fetch("data/" + entry.file);
+  if (!res.ok) {
+    console.error("chunk fetch failed", entry.file, res.status);
+    return;
+  }
+  const buf = await res.arrayBuffer();
   const dv = new DataView(buf);
   const magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
   if (magic !== "SLPC") return;
@@ -372,18 +378,27 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
+function fitToMap() {
+  const b = manifest.bbox;
+  const cx = (b.minX + b.maxX) / 2;
+  const cz = (b.minZ + b.maxZ) / 2;
+  controls.target.set(cx, 0, cz);
+  camera.position.set(cx, 5000, cz);
+  const zoomX = (2 * VIEW_HALF * aspect) / (b.maxX - b.minX);
+  const zoomZ = (2 * VIEW_HALF) / (b.maxZ - b.minZ);
+  camera.zoom = Math.min(zoomX, zoomZ) * 0.9;
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+fitBtn.onclick = fitToMap;
+
 async function boot() {
   manifest = await fetch("data/manifest.json").then((r) => r.json());
   heightMaterial.uniforms.minY.value = manifest.bbox.minY;
   heightMaterial.uniforms.maxY.value = manifest.bbox.maxY;
 
-  const cx = (manifest.bbox.minX + manifest.bbox.maxX) / 2;
-  const cz = (manifest.bbox.minZ + manifest.bbox.maxZ) / 2;
-  controls.target.set(cx, 0, cz);
-  camera.position.set(cx, 5000, cz);
-  controls.update();
-
   onResize();
+  fitToMap();
   renderPinList();
   renderPinMarkers();
 
