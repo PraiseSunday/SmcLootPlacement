@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SMC Loot Map — admin notes</title>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --panel: #161a22;
+    --border: #2a3140;
+    --text: #dfe4ee;
+    --muted: #8b93a5;
+    --accent: #4fa8ff;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.6 system-ui, sans-serif;
+    padding: 40px 20px 80px;
+  }
+  main {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 22px; margin-bottom: 4px; }
+  h2 { font-size: 16px; margin-top: 40px; color: var(--accent); }
+  p, li { color: var(--text); }
+  .muted { color: var(--muted); font-size: 13px; }
+  code, pre {
+    background: #0a0c10;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: #b8e2ff;
+    font-size: 13px;
+  }
+  code { padding: 2px 5px; }
+  pre {
+    padding: 12px 14px;
+    overflow-x: auto;
+  }
+  pre code { background: none; border: none; padding: 0; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin: 16px 0;
+  }
+  a { color: var(--accent); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin: 12px 0;
+  }
+  th, td {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  th { color: var(--muted); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+  <h1>SMC Loot Map — how this is put together</h1>
+  <p class="muted">Reference notes for whoever's running this site. Not linked from the app itself.</p>
+
+  <h2>The two pieces</h2>
+  <p>
+    <strong>GitHub Pages</strong> serves the static files (<code>index.html</code>, <code>app.js</code>,
+    <code>style.css</code>, the chunked map data under <code>data/</code>) — that's it. It has no server-side
+    logic, no accounts, no idea who's looking at the page. Every visitor gets the exact same files.
+  </p>
+  <p>
+    <strong>Supabase</strong> is the actual backend: a hosted Postgres database plus a realtime layer, talked
+    to directly from the browser via <code>@supabase/supabase-js</code>. This is where pins, votes, and the
+    admin login live.
+  </p>
+
+  <h2>How "admin" works</h2>
+  <p>
+    There's no connection between GitHub Pages and who's an admin. Signing in as admin means signing in to
+    <strong>Supabase Auth</strong> through the "Admin sign-in" button in the app itself — that calls
+    <code>supabase.auth.signInWithPassword()</code> with the email/password of the one Auth user created for
+    this project. Supabase's JS client stores the resulting session in that browser's <code>localStorage</code>
+    and the app checks for it on load (<code>supabase.auth.getSession()</code>) to decide whether to show
+    delete buttons.
+  </p>
+  <p>
+    That means: it works the same everywhere — the live GitHub Pages site, a phone, a different computer —
+    as long as you sign in with the same Supabase Auth credentials in that browser. Nothing about it is tied
+    to GitHub, the repo, or how the site is hosted.
+  </p>
+  <div class="card">
+    <strong>To change the admin password</strong> or add a second admin later: Supabase dashboard →
+    Authentication → Users. Deleting a pin is gated by a Row Level Security policy tied to one specific
+    user's UID (see below), so adding another admin means updating that policy too, not just creating another
+    Auth user.
+  </div>
+
+  <h2>What's actually enforced where</h2>
+  <table>
+    <tr><th>Action</th><th>Who can do it</th><th>Enforced by</th></tr>
+    <tr><td>Read pins</td><td>Anyone</td><td>DB policy (public select)</td></tr>
+    <tr><td>Create a pin</td><td>Anyone</td><td>DB policy (public insert)</td></tr>
+    <tr><td>Vote</td><td>Anyone</td><td>A Postgres function (<code>increment_vote</code>) — there's no public
+      UPDATE policy on the table itself, so a vote can only ever change the <code>votes</code> column, never
+      a pin's position/tier/note</td></tr>
+    <tr><td>Delete a pin</td><td>Admin only</td><td>DB policy checking <code>auth.uid()</code> against the
+      admin's UID — enforced by Postgres itself, not the app. The delete button is also hidden in the UI for
+      non-admins, but that's just convenience; the real gate is server-side</td></tr>
+    <tr><td>Auto-delete at -10 votes</td><td>—</td><td>A database trigger, fires automatically on every vote,
+      no app code involved</td></tr>
+  </table>
+  <p class="muted">
+    Full schema, policies, and trigger definitions: <a href="db/schema.sql">db/schema.sql</a> in this repo.
+  </p>
+
+  <h2>Project reference</h2>
+  <div class="card">
+    <table>
+      <tr><td>Supabase project</td><td><code>ogcvmjrlamxjnkhuoupw</code></td></tr>
+      <tr><td>Project URL</td><td><code>https://ogcvmjrlamxjnkhuoupw.supabase.co</code></td></tr>
+      <tr><td>Anon/publishable key</td><td>hardcoded in <code>app.js</code> — this is meant to be public,
+        it's what every visitor's browser uses, RLS is the actual security boundary</td></tr>
+    </table>
+  </div>
+
+  <h2>Map data</h2>
+  <p>
+    The building geometry under <code>data/chunks/</code> was extracted from the game's own mesh files and
+    baked into a compact custom binary format (see <code>tools/build_chunks.py</code>) — it's a one-time
+    export, not something the live site regenerates. If the source game data changes or the export pipeline
+    improves, re-run that script and commit the new <code>data/</code> contents.
+  </p>
+</main>
+</body>
+</html>
