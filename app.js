@@ -38,7 +38,6 @@ const escTagEl = document.getElementById("esc-tag");
 const minimapToggle = document.getElementById("minimap-toggle");
 const minimapPanel = document.getElementById("minimap-panel");
 const minimapCanvas = document.getElementById("minimap");
-const minimapCtx = minimapCanvas.getContext("2d");
 const adminBtn = document.getElementById("admin-btn");
 const adminForm = document.getElementById("admin-form");
 const adminEmailEl = document.getElementById("admin-email");
@@ -130,7 +129,7 @@ const heightMaterial = new THREE.ShaderMaterial({
       if (!gl_FrontFacing) n = -n;
       float diffuse = 0.55 + 0.45 * max(dot(n, lightDir), 0.0);
       vec3 shaded = base * diffuse;
-      float fogT = clamp((distance(vWorldPos, cameraPosition) - fogNear) / (fogFar - fogNear), 0.0, 1.0);
+      float fogT = clamp((distance(vWorldPos.xz, cameraPosition.xz) - fogNear) / (fogFar - fogNear), 0.0, 1.0);
       vec3 withFog = mix(shaded, uBgColor, fogT);
       gl_FragColor = vec4(mix(uBgColor, withFog, fade), 1.0);
     }
@@ -372,57 +371,44 @@ function renderPinList() {
 
 const TIER_COLORS = { 1: 0x7fe89a, 2: 0x5ab0ff, 3: 0xffcf4f };
 
-function hexColor(n) {
-  return "#" + n.toString(16).padStart(6, "0");
-}
-
 minimapToggle.onclick = () => minimapPanel.classList.toggle("hidden");
 
-// Full-map "you are here" overview: building dots come straight from the
-// manifest's chunk bounding boxes (already loaded at boot, no extra fetch)
-// rather than actual geometry, since this is just a coarse orientation aid.
-function drawMinimap() {
-  if (minimapPanel.classList.contains("hidden") || !manifest) return;
-  const W = minimapCanvas.width, H = minimapCanvas.height;
-  const pad = 10;
-  const b = manifest.bbox;
-  const spanX = b.maxX - b.minX, spanZ = b.maxZ - b.minZ;
-  const toXY = (x, z) => [
-    pad + ((x - b.minX) / spanX) * (W - 2 * pad),
-    pad + ((z - b.minZ) / spanZ) * (H - 2 * pad),
-  ];
+// A real live top-down render of the SAME scene/geometry the main view uses
+// (actual building rooftops, actual pin markers) rather than an abstract dot
+// map -- a second renderer+camera pointed at the same `scene`, hovering
+// above the player and following them. Only shows whatever's currently
+// streamed in around the player (same chunks the main view has loaded), which
+// reads as "the area around me" rather than the whole map -- that's the
+// tradeoff for it actually looking like the game instead of a schematic.
+const minimapRenderer = new THREE.WebGLRenderer({ canvas: minimapCanvas, antialias: true });
+minimapRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+minimapRenderer.setSize(minimapCanvas.width, minimapCanvas.height, false);
 
-  minimapCtx.fillStyle = "#0d0f14";
-  minimapCtx.fillRect(0, 0, W, H);
+const MINIMAP_HALF = 9000; // half-width of the area shown, world units
+const minimapCamera = new THREE.OrthographicCamera(
+  -MINIMAP_HALF, MINIMAP_HALF, MINIMAP_HALF, -MINIMAP_HALF, 1, 30000
+);
+minimapCamera.up.set(0, 0, -1);
+minimapCamera.layers.enable(1); // sees the player-facing marker too, main camera doesn't
 
-  minimapCtx.fillStyle = "rgba(140, 150, 170, 0.4)";
-  for (const c of manifest.chunks) {
-    const [px, py] = toXY((c.minX + c.maxX) / 2, (c.minZ + c.maxZ) / 2);
-    minimapCtx.fillRect(px - 1, py - 1, 2, 2);
-  }
+const playerMarkerGeom = new THREE.ConeGeometry(140, 320, 3);
+playerMarkerGeom.rotateX(Math.PI / 2);
+const playerMarker = new THREE.Mesh(playerMarkerGeom, new THREE.MeshBasicMaterial({ color: 0xff5a5a }));
+playerMarker.layers.set(1);
+scene.add(playerMarker);
 
-  for (const pin of pins) {
-    const [px, py] = toXY(pin.x, pin.z);
-    minimapCtx.fillStyle = hexColor(TIER_COLORS[pin.tier] || TIER_COLORS[1]);
-    minimapCtx.beginPath();
-    minimapCtx.arc(px, py, 2.5, 0, Math.PI * 2);
-    minimapCtx.fill();
-  }
+function updateMinimap() {
+  if (minimapPanel.classList.contains("hidden")) return;
+  const px = camera.position.x, pz = camera.position.z;
+  minimapCamera.position.set(px, camera.position.y + 9000, pz);
+  minimapCamera.lookAt(px, 0, pz);
 
-  const [ppx, ppy] = toXY(camera.position.x, camera.position.z);
+  playerMarker.position.set(px, camera.position.y + 60, pz);
   const dir = new THREE.Vector3();
   camera.getWorldDirection(dir);
-  minimapCtx.save();
-  minimapCtx.translate(ppx, ppy);
-  minimapCtx.rotate(Math.atan2(dir.x, dir.z));
-  minimapCtx.fillStyle = "#ff5a5a";
-  minimapCtx.beginPath();
-  minimapCtx.moveTo(0, -7);
-  minimapCtx.lineTo(5, 6);
-  minimapCtx.lineTo(-5, 6);
-  minimapCtx.closePath();
-  minimapCtx.fill();
-  minimapCtx.restore();
+  playerMarker.rotation.y = Math.atan2(dir.x, dir.z);
+
+  minimapRenderer.render(scene, minimapCamera);
 }
 
 function openPinEditor(worldPos) {
@@ -744,7 +730,7 @@ async function boot() {
     }
     if (now - lastMinimapRefresh > 150) {
       lastMinimapRefresh = now;
-      drawMinimap();
+      updateMinimap();
     }
     renderer.render(scene, camera);
   });
