@@ -48,6 +48,7 @@ const adminCancelBtn = document.getElementById("admin-cancel");
 const adminErrorEl = document.getElementById("admin-error");
 
 let manifest = null;
+let terrainManifest = null;
 let pins = [];
 let placing = false;
 let pendingEditor = null;
@@ -75,6 +76,8 @@ const controls = new PointerLockControls(camera, renderer.domElement);
 
 const chunkGroup = new THREE.Group();
 scene.add(chunkGroup);
+const terrainGroup = new THREE.Group();
+scene.add(terrainGroup);
 const pinGroup = new THREE.Group();
 scene.add(pinGroup);
 
@@ -128,6 +131,45 @@ const heightMaterial = new THREE.ShaderMaterial({
     }
     void main() {
       vec3 base = ramp(clamp(vT, 0.0, 1.0));
+      vec3 lightDir = normalize(vec3(0.4, 1.0, 0.3));
+      vec3 n = normalize(vNormal);
+      if (!gl_FrontFacing) n = -n;
+      float diffuse = 0.55 + 0.45 * max(dot(n, lightDir), 0.0);
+      vec3 shaded = base * diffuse;
+      float fogT = clamp((distance(vWorldPos.xz, cameraPosition.xz) - fogNear) / (fogFar - fogNear), 0.0, 1.0);
+      vec3 withFog = mix(shaded, uBgColor, fogT);
+      gl_FragColor = vec4(mix(uBgColor, withFog, fade), 1.0);
+    }
+  `,
+  side: THREE.DoubleSide,
+});
+
+// Same shader as heightMaterial, muted/desaturated ramp so the ground (roads,
+// bridges, bare terrain) reads as backdrop rather than competing with the
+// buildings for attention.
+const terrainMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    fade: { value: 1 },
+    uBgColor: { value: BG_COLOR },
+    fogNear: { value: scene.fog.near },
+    fogFar: { value: scene.fog.far },
+  },
+  vertexShader: heightMaterial.vertexShader,
+  fragmentShader: `
+    uniform float fade;
+    uniform vec3 uBgColor;
+    uniform float fogNear;
+    uniform float fogFar;
+    varying float vT;
+    varying vec3 vNormal;
+    varying vec3 vWorldPos;
+    vec3 ramp(float t) {
+      vec3 low = vec3(0.16, 0.20, 0.19);
+      vec3 high = vec3(0.30, 0.32, 0.27);
+      return mix(low, high, clamp(t, 0.0, 1.0));
+    }
+    void main() {
+      vec3 base = ramp(vT);
       vec3 lightDir = normalize(vec3(0.4, 1.0, 0.3));
       vec3 n = normalize(vNormal);
       if (!gl_FrontFacing) n = -n;
@@ -247,6 +289,112 @@ function updateStreaming() {
   statsEl.textContent =
     `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
     `pos ${px.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${pz.toFixed(0)}`;
+}
+
+// --- terrain streaming (ground/roads/bridges -- a separate layer from the
+// building chunks above since tiles are much bigger than a building grid
+// cell; see tools/build_terrain.py for how tile world placement was solved)
+// -----------------------------------------------------------------------
+
+const loadedTerrain = new Map(); // "xi,yi" -> { mesh, entry }
+
+function terrainKey(xi, yi) {
+  return xi + "," + yi;
+}
+
+async function loadTerrainTile(entry) {
+  const key = terrainKey(entry.xi, entry.yi);
+  if (loadedTerrain.has(key)) return;
+  const placeholder = { mesh: null, entry };
+  loadedTerrain.set(key, placeholder);
+  const res = await fetch("data/" + entry.file);
+  if (!res.ok) {
+    console.error("terrain tile fetch failed", entry.file, res.status);
+    return;
+  }
+  const buf = await res.arrayBuffer();
+  const dv = new DataView(buf);
+  const magic = String.fromCharCode(dv.getUint8(0), dv.getUint8(1), dv.getUint8(2), dv.getUint8(3));
+  if (magic !== "SLPC") return;
+  const vcount = dv.getUint32(4, true);
+  const fcount = dv.getUint32(8, true);
+  const positions = new Float32Array(buf, 12, vcount * 3);
+  const indexOffset = 12 + vcount * 3 * 4;
+  const rawIndex = new Uint32Array(buf, indexOffset, fcount * 3);
+
+  let minY = Infinity, maxY = -Infinity;
+  for (let i = 1; i < positions.length; i += 3) {
+    const y = positions[i];
+    if (y < minY) minY = y;
+    if (y > maxY) maxY = y;
+  }
+  const span = Math.max(maxY - minY, 1);
+  const heightT = new Float32Array(vcount);
+  for (let i = 0; i < vcount; i++) {
+    heightT[i] = (positions[i * 3 + 1] - minY) / span;
+  }
+
+  const geom = new THREE.BufferGeometry();
+  geom.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+  geom.setAttribute("heightT", new THREE.BufferAttribute(heightT, 1));
+  geom.setIndex(new THREE.BufferAttribute(rawIndex, 1));
+  geom.computeVertexNormals();
+
+  const material = terrainMaterial.clone();
+  material.uniforms.fade.value = 0;
+  const mesh = new THREE.Mesh(geom, material);
+  terrainGroup.add(mesh);
+  const rec = loadedTerrain.get(key);
+  if (!rec) {
+    geom.dispose();
+    material.dispose();
+    return;
+  }
+  rec.mesh = mesh;
+  rec.loadedAt = performance.now();
+}
+
+function unloadTerrainTile(key) {
+  const rec = loadedTerrain.get(key);
+  if (!rec) return;
+  if (rec.mesh) {
+    terrainGroup.remove(rec.mesh);
+    rec.mesh.geometry.dispose();
+    rec.mesh.material.dispose();
+  }
+  loadedTerrain.delete(key);
+}
+
+function updateTerrainFades() {
+  const now = performance.now();
+  for (const rec of loadedTerrain.values()) {
+    if (!rec.mesh) continue;
+    const u = rec.mesh.material.uniforms.fade;
+    if (u.value >= 1) continue;
+    u.value = Math.min(1, (now - rec.loadedAt) / FADE_MS);
+  }
+}
+
+function updateTerrainStreaming() {
+  if (!terrainManifest) return;
+  // Unlike the building chunks, terrain tiles stay on the normal streaming
+  // bubble even in overview -- there are 763 of them (vs. 161 building
+  // chunks), and force-loading all of them at once is both unnecessary at
+  // overview zoom (ground detail doesn't read from that height) and enough
+  // simultaneous fetches to exhaust the browser's per-origin connection pool.
+  const px = camera.position.x, pz = camera.position.z;
+  for (const entry of terrainManifest.tiles) {
+    const ecx = (entry.minX + entry.maxX) / 2;
+    const ecz = (entry.minZ + entry.maxZ) / 2;
+    const d = Math.hypot(ecx - px, ecz - pz);
+    if (d <= LOAD_RADIUS) loadTerrainTile(entry);
+  }
+  for (const [key, rec] of [...loadedTerrain]) {
+    const ecx = (rec.entry.minX + rec.entry.maxX) / 2;
+    const ecz = (rec.entry.minZ + rec.entry.maxZ) / 2;
+    const d = Math.hypot(ecx - px, ecz - pz);
+    if (d > UNLOAD_RADIUS) unloadTerrainTile(key);
+  }
 }
 
 // --- pins (live, shared via Supabase -- see db/schema.sql) ----------------
@@ -499,7 +647,7 @@ const CENTER_NDC = new THREE.Vector2(0, 0);
 // touching a wall/floor or just flying near it.
 function pickAtCrosshair() {
   raycaster.setFromCamera(CENTER_NDC, camera);
-  const hits = raycaster.intersectObjects(chunkGroup.children, false);
+  const hits = raycaster.intersectObjects([...chunkGroup.children, ...terrainGroup.children], false);
   if (hits.length) return { point: hits[0].point, hit: true };
   const out = new THREE.Vector3();
   if (raycaster.ray.intersectPlane(groundPlane, out)) return { point: out, hit: false };
@@ -718,6 +866,7 @@ function flyToOverview() {
 
 async function boot() {
   manifest = await fetch("data/manifest.json").then((r) => r.json());
+  terrainManifest = await fetch("data/terrain_manifest.json").then((r) => r.json());
 
   onResize();
   flyToOverview();
@@ -737,6 +886,8 @@ async function boot() {
     applyMovement(delta);
     updateStreaming();
     updateChunkFades();
+    updateTerrainStreaming();
+    updateTerrainFades();
     updatePreview();
     const now = performance.now();
     if (now - lastListRefresh > 500 && !panelEl.classList.contains("collapsed")) {
