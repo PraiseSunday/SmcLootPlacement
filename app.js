@@ -14,6 +14,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 // buildings don't visibly pop in/out right around where you're standing.
 const LOAD_RADIUS = 7000;
 const UNLOAD_RADIUS = 13000;
+const OVERVIEW_FOG_FAR = 45000; // wide enough that the whole map clears the fog from overview height
 const FADE_MS = 400; // chunks fade in over this long instead of snapping into view
 
 const BASE_SPEED = 1400; // world units / second
@@ -51,6 +52,7 @@ let pins = [];
 let placing = false;
 let pendingEditor = null;
 let isAdmin = false;
+let overviewMode = false;
 
 // --- three.js scene setup -------------------------------------------------
 
@@ -64,7 +66,9 @@ const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 viewportEl.appendChild(renderer.domElement);
 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 20000);
+// far=50000 (not just UNLOAD_RADIUS) so the whole-map overview -- which sits
+// well above the normal flight streaming bubble -- doesn't get near-clipped.
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 50000);
 camera.position.set(0, 1500, 0);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
@@ -223,16 +227,22 @@ function updateStreaming() {
   const cell = manifest.cell_size;
   const px = camera.position.x, pz = camera.position.z;
   for (const entry of manifest.chunks) {
+    // Overview wants the whole map visible at once, not just what's within
+    // the normal flight streaming bubble -- load everything and skip the
+    // unload pass below until the player actually starts flying again.
+    if (overviewMode) { loadChunk(entry); continue; }
     const ecx = entry.cx * cell + cell / 2;
     const ecz = entry.cz * cell + cell / 2;
     const d = Math.hypot(ecx - px, ecz - pz);
     if (d <= LOAD_RADIUS) loadChunk(entry);
   }
-  for (const [key, rec] of [...loadedChunks]) {
-    const ecx = rec.entry.cx * cell + cell / 2;
-    const ecz = rec.entry.cz * cell + cell / 2;
-    const d = Math.hypot(ecx - px, ecz - pz);
-    if (d > UNLOAD_RADIUS) unloadChunk(key);
+  if (!overviewMode) {
+    for (const [key, rec] of [...loadedChunks]) {
+      const ecx = rec.entry.cx * cell + cell / 2;
+      const ecz = rec.entry.cz * cell + cell / 2;
+      const d = Math.hypot(ecx - px, ecz - pz);
+      if (d > UNLOAD_RADIUS) unloadChunk(key);
+    }
   }
   statsEl.textContent =
     `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
@@ -588,6 +598,8 @@ controls.addEventListener("lock", () => {
   lockHintEl.classList.add("hidden");
   crosshairEl.classList.add("visible");
   escTagEl.classList.add("visible");
+  overviewMode = false;
+  scene.fog.far = UNLOAD_RADIUS;
 });
 controls.addEventListener("unlock", () => {
   lockHintEl.classList.remove("hidden");
@@ -689,15 +701,18 @@ function flyToOverview() {
   const b = manifest.bbox;
   const cx = (b.minX + b.maxX) / 2;
   const cz = (b.minZ + b.maxZ) / 2;
-  // A large-neighborhood bird's-eye, NOT the whole map -- fitting all ~50,000
-  // units at once leaves individual buildings unreadably tiny. This height
-  // frames roughly a 9,000-unit-wide area, comfortably inside LOAD_RADIUS, so
-  // the normal streaming logic below just naturally covers what's in view
-  // (no more special-casing needed here to force-load everything).
+  // A true whole-map bird's-eye. Individual buildings read as small blocks
+  // from this height, but that's the point -- see the whole layout at once.
+  // overviewMode (cleared the moment the player locks the pointer to fly)
+  // force-loads every chunk and pushes fog.far out so nothing at the map's
+  // edges gets lost to the normal flight streaming bubble or fog falloff.
   // Near-vertical, not perfectly so: a tiny horizontal offset keeps the
   // camera's local axes well-defined for PointerLockControls (a perfectly
   // vertical look makes "forward" ambiguous).
-  camera.position.set(cx - 300, 6000, cz - 300);
+  overviewMode = true;
+  scene.fog.far = OVERVIEW_FOG_FAR;
+  const span = Math.max(b.maxX - b.minX, b.maxZ - b.minZ);
+  camera.position.set(cx - 300, span * 0.62, cz - 300);
   camera.lookAt(cx, 0, cz);
 }
 
