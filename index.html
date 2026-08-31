@@ -9,12 +9,17 @@
 <body>
 <div id="viewport"></div>
 <div id="crosshair"></div>
-<div id="lock-hint">Click to look around &middot; WASD to move &middot; Space / Ctrl to fly up &amp; down &middot; Shift to sprint &middot; Esc to release the mouse</div>
+<div id="lock-hint">Click to look around &middot; WASD to move &middot; scroll to fly up &amp; down &middot; Shift to sprint &middot; Esc to release the mouse</div>
 <div id="esc-tag">Press Esc to use the panel</div>
+
+<button id="minimap-toggle" title="Show/hide the full map">Map</button>
+<div id="minimap-panel" class="hidden">
+  <canvas id="minimap" width="220" height="220"></canvas>
+</div>
 
 <div id="hud">
   <div id="stats"></div>
-  <div id="controls-hint">"Overview" for a bird's-eye reset &middot; "+ Add pin" then click to drop a marker at the crosshair</div>
+  <div id="controls-hint">"Overview" for a bird's-eye reset &middot; "+ Add pin" then click when the marker turns green (touching geometry)</div>
 </div>
 
 <div id="panel">
@@ -23,14 +28,31 @@
     <div id="panel-actions">
       <button id="fit-btn" title="Reset to a bird's-eye view of the whole map">Overview</button>
       <button id="add-btn">+ Add pin</button>
+      <button id="collapse-btn" title="Hide this panel">–</button>
     </div>
   </div>
-  <p class="hint">No shared server yet — pins save to your browser only. Use Export / Import to share a set with others.</p>
-  <div id="pin-list"></div>
-  <div id="io-row">
-    <button id="export-btn">Export JSON</button>
-    <button id="import-btn">Import JSON</button>
-    <input id="import-file" type="file" accept="application/json" style="display:none">
+  <div id="panel-body">
+    <p class="hint">Pins are shared live with everyone. Anyone can add or vote; only the map's admin can delete (or a pin auto-removes itself at -10 votes).</p>
+    <button id="nearest-btn">Warp to nearest chest</button>
+    <div id="pin-list"></div>
+    <div id="io-row">
+      <button id="export-btn">Export JSON</button>
+      <button id="import-btn">Import JSON</button>
+      <input id="import-file" type="file" accept="application/json" style="display:none">
+    </div>
+    <button id="admin-btn">Admin sign-in</button>
+  </div>
+</div>
+
+<div id="admin-form" class="hidden">
+  <div id="admin-form-inner">
+    <input id="admin-email" type="email" placeholder="Email" autocomplete="username">
+    <input id="admin-password" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="row">
+      <button id="admin-signin" class="primary">Sign in</button>
+      <button id="admin-cancel">Cancel</button>
+    </div>
+    <div id="admin-error"></div>
   </div>
 </div>
 
@@ -38,7 +60,8 @@
 {
   "imports": {
     "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2"
   }
 }
 </script>

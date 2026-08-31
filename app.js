@@ -1,36 +1,65 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
+import { createClient } from "@supabase/supabase-js";
 
-const STORAGE_KEY = "smc-loot-pins-v1";
-const LOAD_RADIUS = 4500; // load chunks whose center is within this many world units of the camera
-const UNLOAD_RADIUS = 9000; // drop chunks further than this
+// Anon/publishable key -- meant to be public client-side, RLS policies (see
+// db/schema.sql) are what actually enforce who can insert/vote/delete.
+const SUPABASE_URL = "https://ogcvmjrlamxjnkhuoupw.supabase.co";
+const SUPABASE_KEY = "sb_publishable_xHVhPIiRHm9ClnvCQcw63Q_jtgBZyZW";
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Horizontal (X/Z) only, deliberately -- altitude shouldn't affect what's
+// streamed in, since flying up over a spot doesn't make its surroundings any
+// less relevant. Generous gap between the two (vs. the unload radius) so
+// buildings don't visibly pop in/out right around where you're standing.
+const LOAD_RADIUS = 7000;
+const UNLOAD_RADIUS = 13000;
+const FADE_MS = 400; // chunks fade in over this long instead of snapping into view
 
 const BASE_SPEED = 1400; // world units / second
 const SPRINT_MULT = 3;
+const WHEEL_SPEED = 2.5; // world units of altitude per raw wheel deltaY unit
+const VICINITY_RADIUS = 1000; // only list pins within this many units of the camera
 
 const viewportEl = document.getElementById("viewport");
 const statsEl = document.getElementById("stats");
 const panelListEl = document.getElementById("pin-list");
 const addBtn = document.getElementById("add-btn");
 const fitBtn = document.getElementById("fit-btn");
+const nearestBtn = document.getElementById("nearest-btn");
+const collapseBtn = document.getElementById("collapse-btn");
+const panelEl = document.getElementById("panel");
 const exportBtn = document.getElementById("export-btn");
 const importBtn = document.getElementById("import-btn");
 const importFile = document.getElementById("import-file");
 const lockHintEl = document.getElementById("lock-hint");
 const crosshairEl = document.getElementById("crosshair");
 const escTagEl = document.getElementById("esc-tag");
+const minimapToggle = document.getElementById("minimap-toggle");
+const minimapPanel = document.getElementById("minimap-panel");
+const minimapCanvas = document.getElementById("minimap");
+const minimapCtx = minimapCanvas.getContext("2d");
+const adminBtn = document.getElementById("admin-btn");
+const adminForm = document.getElementById("admin-form");
+const adminEmailEl = document.getElementById("admin-email");
+const adminPasswordEl = document.getElementById("admin-password");
+const adminSigninBtn = document.getElementById("admin-signin");
+const adminCancelBtn = document.getElementById("admin-cancel");
+const adminErrorEl = document.getElementById("admin-error");
 
 let manifest = null;
-let pins = loadPins();
+let pins = [];
 let placing = false;
 let pendingEditor = null;
-let overviewPinned = true; // true right after boot/"Overview" until the user actually moves
+let isAdmin = false;
 
 // --- three.js scene setup -------------------------------------------------
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0d0f14);
-scene.fog = new THREE.Fog(0x0d0f14, 3000, 9000);
+// Fades to background right around the unload radius, so chunks dropping out
+// of range disappear into the haze instead of visibly popping away.
+scene.fog = new THREE.Fog(0x0d0f14, 5000, UNLOAD_RADIUS);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -53,20 +82,40 @@ scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x30281c, 0.9));
 // one tall tower elsewhere on the map would otherwise crush every ordinary
 // building into the bottom of the ramp. Lighting uses computed vertex normals
 // so walls/roofs read as distinct facets instead of flat height-tinted blobs.
+// This is a template: every chunk mesh gets its own clone() (see loadChunk) so
+// each can fade in independently via the "fade" uniform without touching a
+// shared material. Distance fog is done manually here too (mixing toward
+// uBgColor by distance to `cameraPosition`, a uniform three.js always injects)
+// since a raw ShaderMaterial doesn't pick up scene.fog automatically.
+const BG_COLOR = new THREE.Color(0x0d0f14);
 const heightMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    fade: { value: 1 },
+    uBgColor: { value: BG_COLOR },
+    fogNear: { value: scene.fog.near },
+    fogFar: { value: scene.fog.far },
+  },
   vertexShader: `
     attribute float heightT;
     varying float vT;
     varying vec3 vNormal;
+    varying vec3 vWorldPos;
     void main() {
       vT = heightT;
       vNormal = normalize(normalMatrix * normal);
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      vec4 worldPos = modelMatrix * vec4(position, 1.0);
+      vWorldPos = worldPos.xyz;
+      gl_Position = projectionMatrix * viewMatrix * worldPos;
     }
   `,
   fragmentShader: `
+    uniform float fade;
+    uniform vec3 uBgColor;
+    uniform float fogNear;
+    uniform float fogFar;
     varying float vT;
     varying vec3 vNormal;
+    varying vec3 vWorldPos;
     vec3 ramp(float t) {
       vec3 low = vec3(0.35, 0.55, 0.60);
       vec3 mid = vec3(0.45, 0.70, 0.65);
@@ -80,7 +129,10 @@ const heightMaterial = new THREE.ShaderMaterial({
       vec3 n = normalize(vNormal);
       if (!gl_FrontFacing) n = -n;
       float diffuse = 0.55 + 0.45 * max(dot(n, lightDir), 0.0);
-      gl_FragColor = vec4(base * diffuse, 1.0);
+      vec3 shaded = base * diffuse;
+      float fogT = clamp((distance(vWorldPos, cameraPosition) - fogNear) / (fogFar - fogNear), 0.0, 1.0);
+      vec3 withFog = mix(shaded, uBgColor, fogT);
+      gl_FragColor = vec4(mix(uBgColor, withFog, fade), 1.0);
     }
   `,
   side: THREE.DoubleSide,
@@ -133,14 +185,18 @@ async function loadChunk(entry) {
   geom.setIndex(new THREE.BufferAttribute(rawIndex, 1));
   geom.computeVertexNormals();
 
-  const mesh = new THREE.Mesh(geom, heightMaterial);
+  const material = heightMaterial.clone();
+  material.uniforms.fade.value = 0;
+  const mesh = new THREE.Mesh(geom, material);
   chunkGroup.add(mesh);
   const rec = loadedChunks.get(key);
   if (!rec) { // was unloaded while fetching
     geom.dispose();
+    material.dispose();
     return;
   }
   rec.mesh = mesh;
+  rec.loadedAt = performance.now();
 }
 
 function unloadChunk(key) {
@@ -149,8 +205,19 @@ function unloadChunk(key) {
   if (rec.mesh) {
     chunkGroup.remove(rec.mesh);
     rec.mesh.geometry.dispose();
+    rec.mesh.material.dispose();
   }
   loadedChunks.delete(key);
+}
+
+function updateChunkFades() {
+  const now = performance.now();
+  for (const rec of loadedChunks.values()) {
+    if (!rec.mesh) continue;
+    const u = rec.mesh.material.uniforms.fade;
+    if (u.value >= 1) continue;
+    u.value = Math.min(1, (now - rec.loadedAt) / FADE_MS);
+  }
 }
 
 function updateStreaming() {
@@ -162,41 +229,68 @@ function updateStreaming() {
     const d = Math.hypot(ecx - px, ecz - pz);
     if (d <= LOAD_RADIUS) loadChunk(entry);
   }
-  // Right after "Overview" force-loads everything, don't immediately prune it
-  // back down just because those chunks are outside the unload radius of the
-  // (off-center) overview camera position — only start culling once the user
-  // has actually flown somewhere.
-  if (!overviewPinned) {
-    for (const [key, rec] of [...loadedChunks]) {
-      const ecx = rec.entry.cx * cell + cell / 2;
-      const ecz = rec.entry.cz * cell + cell / 2;
-      const d = Math.hypot(ecx - px, ecz - pz);
-      if (d > UNLOAD_RADIUS) unloadChunk(key);
-    }
+  for (const [key, rec] of [...loadedChunks]) {
+    const ecx = rec.entry.cx * cell + cell / 2;
+    const ecz = rec.entry.cz * cell + cell / 2;
+    const d = Math.hypot(ecx - px, ecz - pz);
+    if (d > UNLOAD_RADIUS) unloadChunk(key);
   }
   statsEl.textContent =
     `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
     `pos ${px.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${pz.toFixed(0)}`;
 }
 
-// --- pins -----------------------------------------------------------------
+// --- pins (live, shared via Supabase -- see db/schema.sql) ----------------
 
-function loadPins() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
-
-function savePins() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(pins));
+function refreshUI() {
   renderPinList();
   renderPinMarkers();
 }
 
-function makePinId() {
-  return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+async function fetchPins() {
+  const { data, error } = await supabase.from("pins").select("*");
+  if (error) {
+    console.error("failed to load pins", error);
+    return;
+  }
+  pins = data;
+  refreshUI();
+}
+
+// Anyone can add pins and vote (see the DB's RLS policies); votes route
+// through the increment_vote() RPC rather than a direct table UPDATE so a
+// visitor can't sneak in an edit to someone else's pin position/tier/note
+// alongside the vote. Delete stays admin-only, enforced by RLS regardless of
+// what the client sends -- the UI just also hides the button for non-admins.
+function subscribeToPinChanges() {
+  supabase
+    .channel("pins-changes")
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "pins" }, (payload) => {
+      if (!pins.some((p) => p.id === payload.new.id)) pins.push(payload.new);
+      refreshUI();
+    })
+    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "pins" }, (payload) => {
+      const i = pins.findIndex((p) => p.id === payload.new.id);
+      if (i >= 0) pins[i] = payload.new;
+      refreshUI();
+    })
+    .on("postgres_changes", { event: "DELETE", schema: "public", table: "pins" }, (payload) => {
+      pins = pins.filter((p) => p.id !== payload.old.id);
+      refreshUI();
+    })
+    .subscribe();
+}
+
+async function voteOnPin(pin, delta) {
+  pin.votes = (pin.votes || 0) + delta; // optimistic; realtime reconciles the real value
+  refreshUI();
+  const { error } = await supabase.rpc("increment_vote", { pin_id: pin.id, delta });
+  if (error) console.error("vote failed", error);
+}
+
+async function deletePin(pin) {
+  const { error } = await supabase.from("pins").delete().eq("id", pin.id);
+  if (error) console.error("delete failed (admin sign-in required)", error);
 }
 
 function renderPinMarkers() {
@@ -204,7 +298,7 @@ function renderPinMarkers() {
   for (const pin of pins) {
     const geom = new THREE.ConeGeometry(60, 160, 12);
     geom.rotateX(Math.PI);
-    const mat = new THREE.MeshBasicMaterial({ color: 0xff5a5a });
+    const mat = new THREE.MeshBasicMaterial({ color: TIER_COLORS[pin.tier] || TIER_COLORS[1] });
     const mesh = new THREE.Mesh(geom, mat);
     mesh.position.set(pin.x, pin.y + 100, pin.z);
     mesh.userData.pinId = pin.id;
@@ -212,51 +306,141 @@ function renderPinMarkers() {
   }
 }
 
+function warpToPin(pin) {
+  controls.unlock();
+  const dir = new THREE.Vector3(0.4, -0.15, 0.4).normalize();
+  camera.position.set(pin.x - dir.x * 500, pin.y + 250, pin.z - dir.z * 500);
+  camera.lookAt(pin.x, pin.y, pin.z);
+}
+
+function nearestPin() {
+  let best = null, bestD = Infinity;
+  for (const p of pins) {
+    const d = Math.hypot(p.x - camera.position.x, p.z - camera.position.z);
+    if (d < bestD) { bestD = d; best = p; }
+  }
+  return best;
+}
+
+// Only the pins near where the camera currently is -- with a lot of pins on
+// the map, listing every single one makes the panel useless. Sorted nearest
+// first; "Warp to nearest chest" jumps regardless of the current filter.
 function renderPinList() {
   panelListEl.innerHTML = "";
-  for (const pin of pins) {
+  const nearby = pins
+    .map((p) => ({ p, d: Math.hypot(p.x - camera.position.x, p.z - camera.position.z) }))
+    .filter((e) => e.d <= VICINITY_RADIUS)
+    .sort((a, b) => a.d - b.d);
+
+  if (!nearby.length) {
+    const msg = document.createElement("div");
+    msg.className = "empty-hint";
+    msg.textContent = pins.length
+      ? `No chests within ${Math.round(VICINITY_RADIUS / 1000)}km — ${pins.length} marked on the map. Fly closer, or use "Nearest chest".`
+      : "No chests marked yet.";
+    panelListEl.appendChild(msg);
+    return;
+  }
+
+  for (const { p: pin, d } of nearby) {
     const row = document.createElement("div");
     row.className = "pin-row";
     const label = document.createElement("div");
     label.className = "label";
-    label.textContent = pin.label || "unlabeled";
+    label.textContent = `Chest · Tier ${pin.tier || 1} · ${Math.round(d)}m`;
     const votes = document.createElement("div");
     votes.className = "votes";
     votes.textContent = pin.votes ?? 0;
     const up = document.createElement("button");
     up.textContent = "⬆";
-    up.onclick = (e) => { e.stopPropagation(); pin.votes = (pin.votes || 0) + 1; savePins(); };
+    up.onclick = (e) => { e.stopPropagation(); voteOnPin(pin, 1); };
     const down = document.createElement("button");
     down.textContent = "⬇";
-    down.onclick = (e) => { e.stopPropagation(); pin.votes = (pin.votes || 0) - 1; savePins(); };
-    const del = document.createElement("button");
-    del.textContent = "✕";
-    del.onclick = (e) => {
-      e.stopPropagation();
-      pins = pins.filter((p) => p.id !== pin.id);
-      savePins();
-    };
-    row.append(label, votes, up, down, del);
-    row.onclick = () => {
-      controls.unlock();
-      const dir = new THREE.Vector3(0.4, -0.15, 0.4).normalize();
-      camera.position.set(pin.x - dir.x * 500, pin.y + 250, pin.z - dir.z * 500);
-      camera.lookAt(pin.x, pin.y, pin.z);
-    };
+    down.onclick = (e) => { e.stopPropagation(); voteOnPin(pin, -1); };
+    row.append(label, votes, up, down);
+    if (isAdmin) {
+      const del = document.createElement("button");
+      del.textContent = "✕";
+      del.title = "Delete (admin)";
+      del.onclick = (e) => { e.stopPropagation(); deletePin(pin); };
+      row.append(del);
+    }
+    row.onclick = () => warpToPin(pin);
     panelListEl.appendChild(row);
   }
 }
 
+const TIER_COLORS = { 1: 0x7fe89a, 2: 0x5ab0ff, 3: 0xffcf4f };
+
+function hexColor(n) {
+  return "#" + n.toString(16).padStart(6, "0");
+}
+
+minimapToggle.onclick = () => minimapPanel.classList.toggle("hidden");
+
+// Full-map "you are here" overview: building dots come straight from the
+// manifest's chunk bounding boxes (already loaded at boot, no extra fetch)
+// rather than actual geometry, since this is just a coarse orientation aid.
+function drawMinimap() {
+  if (minimapPanel.classList.contains("hidden") || !manifest) return;
+  const W = minimapCanvas.width, H = minimapCanvas.height;
+  const pad = 10;
+  const b = manifest.bbox;
+  const spanX = b.maxX - b.minX, spanZ = b.maxZ - b.minZ;
+  const toXY = (x, z) => [
+    pad + ((x - b.minX) / spanX) * (W - 2 * pad),
+    pad + ((z - b.minZ) / spanZ) * (H - 2 * pad),
+  ];
+
+  minimapCtx.fillStyle = "#0d0f14";
+  minimapCtx.fillRect(0, 0, W, H);
+
+  minimapCtx.fillStyle = "rgba(140, 150, 170, 0.4)";
+  for (const c of manifest.chunks) {
+    const [px, py] = toXY((c.minX + c.maxX) / 2, (c.minZ + c.maxZ) / 2);
+    minimapCtx.fillRect(px - 1, py - 1, 2, 2);
+  }
+
+  for (const pin of pins) {
+    const [px, py] = toXY(pin.x, pin.z);
+    minimapCtx.fillStyle = hexColor(TIER_COLORS[pin.tier] || TIER_COLORS[1]);
+    minimapCtx.beginPath();
+    minimapCtx.arc(px, py, 2.5, 0, Math.PI * 2);
+    minimapCtx.fill();
+  }
+
+  const [ppx, ppy] = toXY(camera.position.x, camera.position.z);
+  const dir = new THREE.Vector3();
+  camera.getWorldDirection(dir);
+  minimapCtx.save();
+  minimapCtx.translate(ppx, ppy);
+  minimapCtx.rotate(Math.atan2(dir.x, dir.z));
+  minimapCtx.fillStyle = "#ff5a5a";
+  minimapCtx.beginPath();
+  minimapCtx.moveTo(0, -7);
+  minimapCtx.lineTo(5, 6);
+  minimapCtx.lineTo(-5, 6);
+  minimapCtx.closePath();
+  minimapCtx.fill();
+  minimapCtx.restore();
+}
+
 function openPinEditor(worldPos) {
   closePinEditor();
+  let tier = 1;
   const box = document.createElement("div");
   box.id = "pin-editor";
   box.style.left = "50%";
   box.style.top = "50%";
   box.style.transform = "translate(-50%, -50%)";
   box.innerHTML = `
-    <input id="pe-label" placeholder="Loot type (e.g. rifle crate)" autofocus>
-    <textarea id="pe-note" placeholder="Notes (floor, room, landmark...)"></textarea>
+    <div>Chest tier (odds of better loot)</div>
+    <div class="row" id="pe-tiers">
+      <button type="button" data-tier="1" class="tier-btn selected">1</button>
+      <button type="button" data-tier="2" class="tier-btn">2</button>
+      <button type="button" data-tier="3" class="tier-btn">3</button>
+    </div>
+    <textarea id="pe-note" placeholder="Notes (floor, room, landmark...)" autofocus></textarea>
     <div class="row">
       <button id="pe-save" class="primary">Save</button>
       <button id="pe-cancel">Cancel</button>
@@ -264,22 +448,38 @@ function openPinEditor(worldPos) {
   `;
   document.body.appendChild(box);
   pendingEditor = box;
-  box.querySelector("#pe-save").onclick = () => {
-    const label = box.querySelector("#pe-label").value.trim();
+  box.querySelectorAll(".tier-btn").forEach((btn) => {
+    btn.onclick = () => {
+      tier = Number(btn.dataset.tier);
+      box.querySelectorAll(".tier-btn").forEach((b) => b.classList.toggle("selected", b === btn));
+    };
+  });
+  box.querySelector("#pe-save").onclick = async () => {
     const note = box.querySelector("#pe-note").value.trim();
-    pins.push({
-      id: makePinId(),
-      x: worldPos.x, y: worldPos.y, z: worldPos.z,
-      label: label || "unlabeled",
-      note,
-      votes: 0,
-      createdAt: Date.now(),
-    });
-    savePins();
+    const saveBtn = box.querySelector("#pe-save");
+    saveBtn.disabled = true;
+    saveBtn.textContent = "Saving...";
+    const { data, error } = await supabase
+      .from("pins")
+      .insert({ x: worldPos.x, y: worldPos.y, z: worldPos.z, tier, note })
+      .select()
+      .single();
+    if (error) {
+      console.error("failed to save pin", error);
+      saveBtn.disabled = false;
+      saveBtn.textContent = "Save";
+      return;
+    }
+    // Guarded the same way as the realtime INSERT handler below -- the
+    // realtime echo of this exact insert can arrive before or after this
+    // line resolves, so both paths need to be safe against seeing the row
+    // twice (observed as a transient double-counted pin during testing).
+    if (!pins.some((p) => p.id === data.id)) pins.push(data);
+    refreshUI();
     closePinEditor();
   };
   box.querySelector("#pe-cancel").onclick = closePinEditor;
-  box.querySelector("#pe-label").focus();
+  box.querySelector("#pe-note").focus();
 }
 
 function closePinEditor() {
@@ -296,13 +496,37 @@ const raycaster = new THREE.Raycaster();
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 const CENTER_NDC = new THREE.Vector2(0, 0);
 
+// hit=true means the crosshair ray actually landed on loaded building geometry;
+// hit=false means it fell back to a guessed ground-plane point (nothing there,
+// or you're aiming past the edge of what's loaded) -- surfaced to the user via
+// the preview marker's color so it's never ambiguous whether they're really
+// touching a wall/floor or just flying near it.
 function pickAtCrosshair() {
   raycaster.setFromCamera(CENTER_NDC, camera);
   const hits = raycaster.intersectObjects(chunkGroup.children, false);
-  if (hits.length) return hits[0].point;
+  if (hits.length) return { point: hits[0].point, hit: true };
   const out = new THREE.Vector3();
-  if (raycaster.ray.intersectPlane(groundPlane, out)) return out;
-  return raycaster.ray.at(3000, out);
+  if (raycaster.ray.intersectPlane(groundPlane, out)) return { point: out, hit: false };
+  raycaster.ray.at(3000, out);
+  return { point: out, hit: false };
+}
+
+const previewMarker = new THREE.Mesh(
+  new THREE.SphereGeometry(45, 14, 14),
+  new THREE.MeshBasicMaterial({ color: 0x5aff8a, transparent: true, opacity: 0.85 })
+);
+previewMarker.visible = false;
+scene.add(previewMarker);
+
+function updatePreview() {
+  if (!placing || !controls.isLocked) {
+    previewMarker.visible = false;
+    return;
+  }
+  const { point, hit } = pickAtCrosshair();
+  previewMarker.position.copy(point);
+  previewMarker.material.color.setHex(hit ? 0x5aff8a : 0xffa64f);
+  previewMarker.visible = true;
 }
 
 function setPlacing(on) {
@@ -315,14 +539,60 @@ function setPlacing(on) {
 
 addBtn.onclick = () => setPlacing(!placing);
 fitBtn.onclick = () => flyToOverview();
+nearestBtn.onclick = () => {
+  const n = nearestPin();
+  if (n) warpToPin(n);
+};
+collapseBtn.onclick = () => {
+  const collapsed = panelEl.classList.toggle("collapsed");
+  collapseBtn.textContent = collapsed ? "+" : "–";
+};
+
+function setAdminState(on) {
+  isAdmin = on;
+  adminBtn.textContent = on ? "Admin (signed in) — sign out" : "Admin sign-in";
+  adminBtn.classList.toggle("signed-in", on);
+  renderPinList();
+}
+
+adminBtn.onclick = async () => {
+  if (isAdmin) {
+    await supabase.auth.signOut();
+    return;
+  }
+  adminErrorEl.textContent = "";
+  adminForm.classList.remove("hidden");
+  adminEmailEl.focus();
+};
+
+adminCancelBtn.onclick = () => {
+  adminForm.classList.add("hidden");
+  adminEmailEl.value = "";
+  adminPasswordEl.value = "";
+  adminErrorEl.textContent = "";
+};
+
+adminSigninBtn.onclick = async () => {
+  const email = adminEmailEl.value.trim();
+  const password = adminPasswordEl.value;
+  adminErrorEl.textContent = "";
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    adminErrorEl.textContent = error.message;
+    return;
+  }
+  adminForm.classList.add("hidden");
+  adminEmailEl.value = "";
+  adminPasswordEl.value = "";
+};
 
 renderer.domElement.addEventListener("click", () => {
   if (placing) {
     if (!controls.isLocked) return; // first click just requests the lock
-    const world = pickAtCrosshair();
+    const { point } = pickAtCrosshair();
     controls.unlock();
     setPlacing(false);
-    openPinEditor(world);
+    openPinEditor(point);
     return;
   }
   if (!controls.isLocked && !pendingEditor) controls.lock();
@@ -350,6 +620,14 @@ window.addEventListener("keyup", (e) => {
   if (e.code in keys) keys[e.code] = false;
 });
 
+// Scroll wheel controls altitude while flying -- feels more natural than
+// Space/Ctrl for fine vertical adjustment (they still work too).
+renderer.domElement.addEventListener("wheel", (e) => {
+  if (!controls.isLocked) return;
+  e.preventDefault();
+  camera.position.y -= e.deltaY * WHEEL_SPEED;
+}, { passive: false });
+
 const keys = {
   KeyW: false, KeyA: false, KeyS: false, KeyD: false,
   ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false,
@@ -367,7 +645,6 @@ function applyMovement(delta) {
   if (strafe) controls.moveRight(strafe * speed);
   const vertical = (keys.Space ? 1 : 0) - (keys.ControlLeft || keys.ControlRight ? 1 : 0);
   if (vertical) camera.position.y += vertical * speed;
-  if (forward || strafe || vertical) overviewPinned = false;
 }
 
 // --- export / import --------------------------------------------------
@@ -389,14 +666,25 @@ importFile.onchange = async () => {
   if (!file) return;
   try {
     const incoming = JSON.parse(await file.text());
-    const byId = new Map(pins.map((p) => [p.id, p]));
-    for (const p of incoming) {
-      if (p && p.id) byId.set(p.id, p);
+    // Always inserted as NEW rows -- votes/id aren't taken from the file, so
+    // importing can't be used to smuggle in fake vote counts. Falls back to
+    // the old "label" field for files exported before the tier system.
+    const rows = incoming
+      .filter((p) => p && typeof p.x === "number" && typeof p.y === "number" && typeof p.z === "number")
+      .map((p) => ({
+        x: p.x, y: p.y, z: p.z,
+        tier: [1, 2, 3].includes(p.tier) ? p.tier : 1,
+        note: p.note || p.label || "",
+      }));
+    if (!rows.length) {
+      alert("No valid pins found in that file.");
+      return;
     }
-    pins = [...byId.values()];
-    savePins();
+    const { error } = await supabase.from("pins").insert(rows);
+    if (error) throw error;
+    await fetchPins();
   } catch (err) {
-    alert("Could not read that file: " + err.message);
+    alert("Could not import that file: " + err.message);
   }
   importFile.value = "";
 };
@@ -410,30 +698,21 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
-function loadAllChunks() {
-  // Streaming normally loads chunks by distance from the camera's XZ position,
-  // which is wrong for the overview shot: the camera sits off to the side of
-  // the map looking AT the center, so content near the center can be outside
-  // the load radius even though it's what's on screen. The overview is a
-  // deliberate "see everything" action, so force every chunk in regardless of
-  // distance (total data is ~50MB, a one-time load, already proven fine).
-  for (const entry of manifest.chunks) loadChunk(entry);
-}
-
 function flyToOverview() {
   controls.unlock();
   const b = manifest.bbox;
   const cx = (b.minX + b.maxX) / 2;
   const cz = (b.minZ + b.maxZ) / 2;
-  // Angled 3/4 aerial shot, not a straight-down look: a perfectly vertical
-  // camera makes "forward" horizontally ambiguous (PointerLockControls derives
-  // move direction from the camera's local axes), so WASD would do nothing
-  // useful until the user first moved the mouse. This angle keeps movement
-  // meaningful from the very first frame.
-  camera.position.set(cx - 3000, 6000, cz - 3000);
+  // A large-neighborhood bird's-eye, NOT the whole map -- fitting all ~50,000
+  // units at once leaves individual buildings unreadably tiny. This height
+  // frames roughly a 9,000-unit-wide area, comfortably inside LOAD_RADIUS, so
+  // the normal streaming logic below just naturally covers what's in view
+  // (no more special-casing needed here to force-load everything).
+  // Near-vertical, not perfectly so: a tiny horizontal offset keeps the
+  // camera's local axes well-defined for PointerLockControls (a perfectly
+  // vertical look makes "forward" ambiguous).
+  camera.position.set(cx - 300, 6000, cz - 300);
   camera.lookAt(cx, 0, cz);
-  overviewPinned = true;
-  loadAllChunks();
 }
 
 async function boot() {
@@ -441,14 +720,32 @@ async function boot() {
 
   onResize();
   flyToOverview();
-  renderPinList();
-  renderPinMarkers();
+
+  const { data: { session } } = await supabase.auth.getSession();
+  setAdminState(!!session);
+  supabase.auth.onAuthStateChange((_event, session2) => setAdminState(!!session2));
+
+  await fetchPins();
+  subscribeToPinChanges();
 
   const clock = new THREE.Clock();
+  let lastListRefresh = 0;
+  let lastMinimapRefresh = 0;
   renderer.setAnimationLoop(() => {
     const delta = Math.min(clock.getDelta(), 0.1);
     applyMovement(delta);
     updateStreaming();
+    updateChunkFades();
+    updatePreview();
+    const now = performance.now();
+    if (now - lastListRefresh > 500 && !panelEl.classList.contains("collapsed")) {
+      lastListRefresh = now;
+      renderPinList();
+    }
+    if (now - lastMinimapRefresh > 150) {
+      lastMinimapRefresh = now;
+      drawMinimap();
+    }
     renderer.render(scene, camera);
   });
 }

@@ -94,6 +94,30 @@ html, body {
   display: block;
 }
 
+#minimap-toggle {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+}
+
+#minimap-panel {
+  position: absolute;
+  bottom: 46px;
+  left: 10px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+  line-height: 0;
+}
+#minimap-panel.hidden {
+  display: none;
+}
+#minimap {
+  display: block;
+  border-radius: 4px;
+}
+
 #hud {
   position: absolute;
   top: 10px;
@@ -116,7 +140,7 @@ html, body {
   position: absolute;
   top: 10px;
   right: 10px;
-  width: 300px;
+  width: 340px;
   max-height: calc(100vh - 20px);
   background: var(--panel);
   border: 1px solid var(--border);
@@ -130,13 +154,40 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 6px;
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
+}
+#panel-header strong {
+  white-space: nowrap;
 }
 
 #panel-actions {
   display: flex;
-  gap: 6px;
+  gap: 4px;
+  flex-shrink: 0;
+}
+#panel-actions button {
+  padding: 5px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+#collapse-btn {
+  padding: 5px 9px;
+  font-weight: 700;
+}
+
+#panel-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+#panel.collapsed {
+  max-height: none;
+}
+#panel.collapsed #panel-body {
+  display: none;
 }
 
 .hint {
@@ -145,6 +196,17 @@ html, body {
   font-size: 11px;
   color: var(--muted);
   border-bottom: 1px solid var(--border);
+}
+
+#nearest-btn {
+  margin: 8px 8px 0;
+}
+
+.empty-hint {
+  padding: 16px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
 }
 
 #pin-list {
@@ -194,6 +256,60 @@ html, body {
   gap: 6px;
   padding: 8px;
   border-top: 1px solid var(--border);
+}
+
+#admin-btn {
+  margin: 0 8px 8px;
+  font-size: 11px;
+  color: var(--muted);
+  background: none;
+  border: none;
+}
+#admin-btn:hover {
+  color: var(--text);
+}
+#admin-btn.signed-in {
+  color: #7fe89a;
+}
+
+#admin-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+#admin-form.hidden {
+  display: none;
+}
+#admin-form-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 220px;
+}
+#admin-form-inner input {
+  background: #0d0f14;
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 4px;
+  padding: 6px 8px;
+  font: inherit;
+}
+#admin-form-inner .row {
+  display: flex;
+  gap: 6px;
+}
+#admin-form-inner .row button {
+  flex: 1;
+}
+#admin-error {
+  font-size: 11px;
+  color: #ff5a5a;
+  min-height: 14px;
 }
 
 button {
@@ -248,4 +364,12 @@ button.primary {
 }
 #pin-editor .row button {
   flex: 1;
+}
+.tier-btn {
+  font-weight: 600;
+}
+.tier-btn.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #06131f;
 }
