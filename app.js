@@ -24,6 +24,7 @@ let manifest = null;
 let pins = loadPins();
 let placing = false;
 let pendingEditor = null;
+let overviewPinned = true; // true right after boot/"Overview" until the user actually moves
 
 // --- three.js scene setup -------------------------------------------------
 
@@ -161,11 +162,17 @@ function updateStreaming() {
     const d = Math.hypot(ecx - px, ecz - pz);
     if (d <= LOAD_RADIUS) loadChunk(entry);
   }
-  for (const [key, rec] of [...loadedChunks]) {
-    const ecx = rec.entry.cx * cell + cell / 2;
-    const ecz = rec.entry.cz * cell + cell / 2;
-    const d = Math.hypot(ecx - px, ecz - pz);
-    if (d > UNLOAD_RADIUS) unloadChunk(key);
+  // Right after "Overview" force-loads everything, don't immediately prune it
+  // back down just because those chunks are outside the unload radius of the
+  // (off-center) overview camera position — only start culling once the user
+  // has actually flown somewhere.
+  if (!overviewPinned) {
+    for (const [key, rec] of [...loadedChunks]) {
+      const ecx = rec.entry.cx * cell + cell / 2;
+      const ecz = rec.entry.cz * cell + cell / 2;
+      const d = Math.hypot(ecx - px, ecz - pz);
+      if (d > UNLOAD_RADIUS) unloadChunk(key);
+    }
   }
   statsEl.textContent =
     `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
@@ -360,6 +367,7 @@ function applyMovement(delta) {
   if (strafe) controls.moveRight(strafe * speed);
   const vertical = (keys.Space ? 1 : 0) - (keys.ControlLeft || keys.ControlRight ? 1 : 0);
   if (vertical) camera.position.y += vertical * speed;
+  if (forward || strafe || vertical) overviewPinned = false;
 }
 
 // --- export / import --------------------------------------------------
@@ -402,6 +410,16 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
+function loadAllChunks() {
+  // Streaming normally loads chunks by distance from the camera's XZ position,
+  // which is wrong for the overview shot: the camera sits off to the side of
+  // the map looking AT the center, so content near the center can be outside
+  // the load radius even though it's what's on screen. The overview is a
+  // deliberate "see everything" action, so force every chunk in regardless of
+  // distance (total data is ~50MB, a one-time load, already proven fine).
+  for (const entry of manifest.chunks) loadChunk(entry);
+}
+
 function flyToOverview() {
   controls.unlock();
   const b = manifest.bbox;
@@ -412,8 +430,10 @@ function flyToOverview() {
   // move direction from the camera's local axes), so WASD would do nothing
   // useful until the user first moved the mouse. This angle keeps movement
   // meaningful from the very first frame.
-  camera.position.set(cx - 9000, 8000, cz - 9000);
+  camera.position.set(cx - 3000, 6000, cz - 3000);
   camera.lookAt(cx, 0, cz);
+  overviewPinned = true;
+  loadAllChunks();
 }
 
 async function boot() {
