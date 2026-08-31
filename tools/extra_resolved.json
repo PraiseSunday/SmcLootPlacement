@@ -1,0 +1,97 @@
+{
+ "hyd_building_hyd_01": {
+  "base": "building_hyd_01",
+  "parts": [
+   "building_hyd_01_a",
+   "building_hyd_01_b"
+  ],
+  "paths": {
+   "building_hyd_01_a": "model_new\\scene\\building\\hongyadong\\building_hyd_01_a.gim",
+   "building_hyd_01_b": "model_new\\scene\\building\\hongyadong\\building_hyd_01_b.gim"
+  }
+ },
+ "hyd_building_hyd_03": {
+  "base": "building_hyd_03",
+  "parts": [
+   "building_hyd_03_a",
+   "building_hyd_03_b"
+  ],
+  "paths": {
+   "building_hyd_03_a": "model_new\\scene\\building\\hongyadong\\building_hyd_03_a.gim",
+   "building_hyd_03_b": "model_new\\scene\\building\\hongyadong\\building_hyd_03_b.gim"
+  }
+ },
+ "hyd_building_hyd_04": {
+  "base": "building_hyd_04",
+  "parts": [
+   "building_hyd_04_a",
+   "building_hyd_04_b"
+  ],
+  "paths": {
+   "building_hyd_04_a": "model_new\\scene\\building\\hongyadong\\building_hyd_04_a.gim",
+   "building_hyd_04_b": "model_new\\scene\\building\\hongyadong\\building_hyd_04_b.gim"
+  }
+ },
+ "hyd_building_hyd_05": {
+  "base": "building_hyd_05",
+  "parts": [
+   "building_hyd_05_a",
+   "building_hyd_05_b"
+  ],
+  "paths": {
+   "building_hyd_05_a": "model_new\\scene\\building\\hongyadong\\building_hyd_05_a.gim",
+   "building_hyd_05_b": "model_new\\scene\\building\\hongyadong\\building_hyd_05_b.gim"
+  }
+ },
+ "hyd_building_hyd_06": {
+  "base": "building_hyd_06",
+  "parts": [
+   "building_hyd_06_a",
+   "building_hyd_06_b"
+  ],
+  "paths": {
+   "building_hyd_06_a": "model_new\\scene\\building\\hongyadong\\building_hyd_06_a.gim",
+   "building_hyd_06_b": "model_new\\scene\\building\\hongyadong\\building_hyd_06_b.gim"
+  }
+ },
+ "hyd_building_hyd_07": {
+  "base": "building_hyd_07",
+  "parts": [
+   "building_hyd_07_a",
+   "building_hyd_07_b"
+  ],
+  "paths": {
+   "building_hyd_07_a": "model_new\\scene\\building\\hongyadong\\building_hyd_07_a.gim",
+   "building_hyd_07_b": "model_new\\scene\\building\\hongyadong\\building_hyd_07_b.gim"
+  }
+ },
+ "hyd_building_hyd_08": {
+  "base": "building_hyd_08",
+  "parts": [
+   "building_hyd_08_a",
+   "building_hyd_08_b"
+  ],
+  "paths": {
+   "building_hyd_08_a": "model_new\\scene\\building\\hongyadong\\building_hyd_08_a.gim",
+   "building_hyd_08_b": "model_new\\scene\\building\\hongyadong\\building_hyd_08_b.gim"
+  }
+ },
+ "pubu_building_xl_csd_a": {
+  "base": "building_xl_csd_a",
+  "parts": [
+   "building_xl_csd_a"
+  ],
+  "paths": {
+   "building_xl_csd_a": "model_new\\scene\\building\\xunlianchang\\building_xl_csd_a.gim"
+  }
+ },
+ "pubu_building_xl_csd_b": {
+  "base": "building_xl_csd_b",
+  "parts": [
+   "building_xl_csd_b"
+  ],
+  "paths": {
+   "building_xl_csd_b": "model_new\\scene\\building\\xunlianchang\\building_xl_csd_b.gim"
+  }
+ }
+}

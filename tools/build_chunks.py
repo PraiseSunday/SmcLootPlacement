@@ -36,6 +36,14 @@ def to_world(pos, rot16, scale, local_xyz):
 def main():
     house = json.load(open(os.path.join(SMCSTUFF, "build/configs/item_control/bw_all06/house_info.json")))
     resolved = json.load(open(os.path.join(CACHE, "resolved.json")))
+    # model_name_to_path.json (the table the resolver above draws from) is missing
+    # a handful of building groups entirely -- their real .gim paths were instead
+    # found via build/recovered_names.json (see docs/archaeology note on the
+    # hongyadong temple + xunlianchang buildings). Hardcoded here since the cache
+    # above is regenerated locally and gitignored.
+    extra_path = os.path.join(REPO_ROOT, "tools", "extra_resolved.json")
+    if os.path.exists(extra_path):
+        resolved.update(json.load(open(extra_path)))
 
     mesh_cache = {}
     chunks = {}  # (cx, cz) -> {"verts": [...], "faces": [...], "buildings": 0}
