@@ -8,17 +8,20 @@
 </head>
 <body>
 <div id="viewport"></div>
+<div id="crosshair"></div>
+<div id="lock-hint">Click to look around &middot; WASD to move &middot; Space / Ctrl to fly up &amp; down &middot; Shift to sprint &middot; Esc to release the mouse</div>
+<div id="esc-tag">Press Esc to use the panel</div>
 
 <div id="hud">
   <div id="stats"></div>
-  <div id="controls-hint">Drag to pan &middot; scroll to zoom &middot; "Fit map" for the full overview &middot; "+ Add pin" then click a spot to mark loot</div>
+  <div id="controls-hint">"Overview" for a bird's-eye reset &middot; "+ Add pin" then click to drop a marker at the crosshair</div>
 </div>
 
 <div id="panel">
   <div id="panel-header">
     <strong>Chest pins</strong>
     <div id="panel-actions">
-      <button id="fit-btn" title="Zoom out to see the whole map">Fit map</button>
+      <button id="fit-btn" title="Reset to a bird's-eye view of the whole map">Overview</button>
       <button id="add-btn">+ Add pin</button>
     </div>
   </div>

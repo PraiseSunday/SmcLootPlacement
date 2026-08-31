@@ -1,9 +1,12 @@
 import * as THREE from "three";
-import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 
 const STORAGE_KEY = "smc-loot-pins-v1";
-const CHUNK_MARGIN = 1; // extra rings of chunks to keep loaded around the viewport
-const CHUNK_UNLOAD_MARGIN = 3; // drop chunks further than this many rings away
+const LOAD_RADIUS = 4500; // load chunks whose center is within this many world units of the camera
+const UNLOAD_RADIUS = 9000; // drop chunks further than this
+
+const BASE_SPEED = 1400; // world units / second
+const SPRINT_MULT = 3;
 
 const viewportEl = document.getElementById("viewport");
 const statsEl = document.getElementById("stats");
@@ -13,6 +16,9 @@ const fitBtn = document.getElementById("fit-btn");
 const exportBtn = document.getElementById("export-btn");
 const importBtn = document.getElementById("import-btn");
 const importFile = document.getElementById("import-file");
+const lockHintEl = document.getElementById("lock-hint");
+const crosshairEl = document.getElementById("crosshair");
+const escTagEl = document.getElementById("esc-tag");
 
 let manifest = null;
 let pins = loadPins();
@@ -23,36 +29,23 @@ let pendingEditor = null;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0d0f14);
+scene.fog = new THREE.Fog(0x0d0f14, 3000, 9000);
 
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 viewportEl.appendChild(renderer.domElement);
 
-const VIEW_HALF = 4000; // initial half-width of the camera frustum, world units
-let aspect = window.innerWidth / window.innerHeight;
-const camera = new THREE.OrthographicCamera(
-  -VIEW_HALF * aspect, VIEW_HALF * aspect, VIEW_HALF, -VIEW_HALF, 0.1, 100000
-);
-camera.position.set(0, 5000, 0);
-camera.up.set(0, 0, -1);
-camera.lookAt(0, 0, 0);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 20000);
+camera.position.set(0, 1500, 0);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableRotate = false;
-controls.screenSpacePanning = true;
-controls.mouseButtons = {
-  LEFT: THREE.MOUSE.PAN,
-  MIDDLE: THREE.MOUSE.DOLLY,
-  RIGHT: THREE.MOUSE.PAN,
-};
-controls.minZoom = 0.05;
-controls.maxZoom = 40;
-controls.target.set(0, 0, 0);
+const controls = new PointerLockControls(camera, renderer.domElement);
 
 const chunkGroup = new THREE.Group();
 scene.add(chunkGroup);
 const pinGroup = new THREE.Group();
 scene.add(pinGroup);
+
+scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x30281c, 0.9));
 
 // Height is normalized PER BUILDING (baked into a "heightT" vertex attribute at
 // chunk-load time, see loadChunk) rather than against the whole-map Y range —
@@ -92,38 +85,19 @@ const heightMaterial = new THREE.ShaderMaterial({
   side: THREE.DoubleSide,
 });
 
-// --- chunk streaming ---------------------------------------------------
+// --- chunk streaming (radius around the camera, since there's no fixed
+// top-down frustum anymore) -------------------------------------------------
 
-const loadedChunks = new Map(); // "cx,cz" -> { mesh, entry, lastSeen }
-let frame = 0;
+const loadedChunks = new Map(); // "cx,cz" -> { mesh, entry }
 
 function chunkKey(cx, cz) {
   return cx + "," + cz;
 }
 
-function visibleChunkRange() {
-  const w = (camera.right - camera.left) / camera.zoom;
-  const h = (camera.top - camera.bottom) / camera.zoom;
-  const cx0 = camera.position.x - w / 2;
-  const cx1 = camera.position.x + w / 2;
-  const cz0 = camera.position.z - h / 2;
-  const cz1 = camera.position.z + h / 2;
-  const cell = manifest.cell_size;
-  return {
-    minCx: Math.floor(cx0 / cell) - CHUNK_MARGIN,
-    maxCx: Math.floor(cx1 / cell) + CHUNK_MARGIN,
-    minCz: Math.floor(cz0 / cell) - CHUNK_MARGIN,
-    maxCz: Math.floor(cz1 / cell) + CHUNK_MARGIN,
-  };
-}
-
 async function loadChunk(entry) {
   const key = chunkKey(entry.cx, entry.cz);
-  if (loadedChunks.has(key)) {
-    loadedChunks.get(key).lastSeen = frame;
-    return;
-  }
-  const placeholder = { mesh: null, entry, lastSeen: frame, loading: true };
+  if (loadedChunks.has(key)) return;
+  const placeholder = { mesh: null, entry };
   loadedChunks.set(key, placeholder);
   const res = await fetch("data/" + entry.file);
   if (!res.ok) {
@@ -166,8 +140,6 @@ async function loadChunk(entry) {
     return;
   }
   rec.mesh = mesh;
-  rec.loading = false;
-  rec.lastSeen = frame;
 }
 
 function unloadChunk(key) {
@@ -181,30 +153,23 @@ function unloadChunk(key) {
 }
 
 function updateStreaming() {
-  frame++;
-  const range = visibleChunkRange();
+  const cell = manifest.cell_size;
+  const px = camera.position.x, pz = camera.position.z;
   for (const entry of manifest.chunks) {
-    if (
-      entry.cx >= range.minCx - (CHUNK_UNLOAD_MARGIN - CHUNK_MARGIN) &&
-      entry.cx <= range.maxCx + (CHUNK_UNLOAD_MARGIN - CHUNK_MARGIN) &&
-      entry.cz >= range.minCz - (CHUNK_UNLOAD_MARGIN - CHUNK_MARGIN) &&
-      entry.cz <= range.maxCz + (CHUNK_UNLOAD_MARGIN - CHUNK_MARGIN)
-    ) {
-      if (
-        entry.cx >= range.minCx && entry.cx <= range.maxCx &&
-        entry.cz >= range.minCz && entry.cz <= range.maxCz
-      ) {
-        loadChunk(entry);
-      }
-    }
+    const ecx = entry.cx * cell + cell / 2;
+    const ecz = entry.cz * cell + cell / 2;
+    const d = Math.hypot(ecx - px, ecz - pz);
+    if (d <= LOAD_RADIUS) loadChunk(entry);
   }
   for (const [key, rec] of [...loadedChunks]) {
-    const dx = Math.abs(rec.entry.cx - (range.minCx + range.maxCx) / 2);
-    const dz = Math.abs(rec.entry.cz - (range.minCz + range.maxCz) / 2);
-    const span = Math.max(range.maxCx - range.minCx, range.maxCz - range.minCz) / 2 + CHUNK_UNLOAD_MARGIN;
-    if (Math.max(dx, dz) > span) unloadChunk(key);
+    const ecx = rec.entry.cx * cell + cell / 2;
+    const ecz = rec.entry.cz * cell + cell / 2;
+    const d = Math.hypot(ecx - px, ecz - pz);
+    if (d > UNLOAD_RADIUS) unloadChunk(key);
   }
-  statsEl.textContent = `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins`;
+  statsEl.textContent =
+    `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
+    `pos ${px.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${pz.toFixed(0)}`;
 }
 
 // --- pins -----------------------------------------------------------------
@@ -266,20 +231,22 @@ function renderPinList() {
     };
     row.append(label, votes, up, down, del);
     row.onclick = () => {
-      controls.target.set(pin.x, 0, pin.z);
-      camera.position.set(pin.x, camera.position.y, pin.z);
-      controls.update();
+      controls.unlock();
+      const dir = new THREE.Vector3(0.4, -0.15, 0.4).normalize();
+      camera.position.set(pin.x - dir.x * 500, pin.y + 250, pin.z - dir.z * 500);
+      camera.lookAt(pin.x, pin.y, pin.z);
     };
     panelListEl.appendChild(row);
   }
 }
 
-function openPinEditor(worldPos, screenX, screenY) {
+function openPinEditor(worldPos) {
   closePinEditor();
   const box = document.createElement("div");
   box.id = "pin-editor";
-  box.style.left = Math.min(screenX, window.innerWidth - 240) + "px";
-  box.style.top = Math.min(screenY, window.innerHeight - 200) + "px";
+  box.style.left = "50%";
+  box.style.top = "50%";
+  box.style.transform = "translate(-50%, -50%)";
   box.innerHTML = `
     <input id="pe-label" placeholder="Loot type (e.g. rifle crate)" autofocus>
     <textarea id="pe-note" placeholder="Notes (floor, room, landmark...)"></textarea>
@@ -315,46 +282,85 @@ function closePinEditor() {
   }
 }
 
-// --- picking / add-pin flow ------------------------------------------------
+// --- picking / add-pin flow (crosshair-based: pointer is locked & hidden
+// while flying, so raycasts always come from screen center, not the cursor) --
 
 const raycaster = new THREE.Raycaster();
 const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+const CENTER_NDC = new THREE.Vector2(0, 0);
 
-function screenToWorld(clientX, clientY) {
-  const rect = renderer.domElement.getBoundingClientRect();
-  const ndc = new THREE.Vector2(
-    ((clientX - rect.left) / rect.width) * 2 - 1,
-    -((clientY - rect.top) / rect.height) * 2 + 1
-  );
-  raycaster.setFromCamera(ndc, camera);
+function pickAtCrosshair() {
+  raycaster.setFromCamera(CENTER_NDC, camera);
   const hits = raycaster.intersectObjects(chunkGroup.children, false);
   if (hits.length) return hits[0].point;
   const out = new THREE.Vector3();
-  raycaster.ray.intersectPlane(groundPlane, out);
-  return out;
+  if (raycaster.ray.intersectPlane(groundPlane, out)) return out;
+  return raycaster.ray.at(3000, out);
 }
 
 function setPlacing(on) {
   placing = on;
-  viewportEl.classList.toggle("placing", on);
-  addBtn.textContent = on ? "Click the map..." : "+ Add pin";
+  addBtn.textContent = on ? "Click to drop pin..." : "+ Add pin";
+  crosshairEl.classList.toggle("placing", on);
+  crosshairEl.classList.toggle("visible", on || controls.isLocked);
+  if (on) controls.lock();
 }
 
 addBtn.onclick = () => setPlacing(!placing);
+fitBtn.onclick = () => flyToOverview();
 
-renderer.domElement.addEventListener("click", (e) => {
-  if (!placing) return;
-  const world = screenToWorld(e.clientX, e.clientY);
-  setPlacing(false);
-  openPinEditor(world, e.clientX, e.clientY);
+renderer.domElement.addEventListener("click", () => {
+  if (placing) {
+    if (!controls.isLocked) return; // first click just requests the lock
+    const world = pickAtCrosshair();
+    controls.unlock();
+    setPlacing(false);
+    openPinEditor(world);
+    return;
+  }
+  if (!controls.isLocked && !pendingEditor) controls.lock();
+});
+
+controls.addEventListener("lock", () => {
+  lockHintEl.classList.add("hidden");
+  crosshairEl.classList.add("visible");
+  escTagEl.classList.add("visible");
+});
+controls.addEventListener("unlock", () => {
+  lockHintEl.classList.remove("hidden");
+  escTagEl.classList.remove("visible");
+  if (!placing) crosshairEl.classList.remove("visible");
 });
 
 window.addEventListener("keydown", (e) => {
+  if (e.code in keys) keys[e.code] = true;
   if (e.key === "Escape") {
     setPlacing(false);
     closePinEditor();
   }
 });
+window.addEventListener("keyup", (e) => {
+  if (e.code in keys) keys[e.code] = false;
+});
+
+const keys = {
+  KeyW: false, KeyA: false, KeyS: false, KeyD: false,
+  ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false,
+  Space: false, ControlLeft: false, ControlRight: false,
+  ShiftLeft: false, ShiftRight: false,
+};
+
+function applyMovement(delta) {
+  if (!controls.isLocked) return;
+  const sprint = keys.ShiftLeft || keys.ShiftRight;
+  const speed = (sprint ? BASE_SPEED * SPRINT_MULT : BASE_SPEED) * delta;
+  const forward = (keys.KeyW || keys.ArrowUp ? 1 : 0) - (keys.KeyS || keys.ArrowDown ? 1 : 0);
+  const strafe = (keys.KeyD || keys.ArrowRight ? 1 : 0) - (keys.KeyA || keys.ArrowLeft ? 1 : 0);
+  if (forward) controls.moveForward(forward * speed);
+  if (strafe) controls.moveRight(strafe * speed);
+  const vertical = (keys.Space ? 1 : 0) - (keys.ControlLeft || keys.ControlRight ? 1 : 0);
+  if (vertical) camera.position.y += vertical * speed;
+}
 
 // --- export / import --------------------------------------------------
 
@@ -390,38 +396,38 @@ importFile.onchange = async () => {
 // --- boot -----------------------------------------------------------------
 
 function onResize() {
-  aspect = window.innerWidth / window.innerHeight;
-  camera.left = -VIEW_HALF * aspect;
-  camera.right = VIEW_HALF * aspect;
+  camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 window.addEventListener("resize", onResize);
 
-function fitToMap() {
+function flyToOverview() {
+  controls.unlock();
   const b = manifest.bbox;
   const cx = (b.minX + b.maxX) / 2;
   const cz = (b.minZ + b.maxZ) / 2;
-  controls.target.set(cx, 0, cz);
-  camera.position.set(cx, 5000, cz);
-  const zoomX = (2 * VIEW_HALF * aspect) / (b.maxX - b.minX);
-  const zoomZ = (2 * VIEW_HALF) / (b.maxZ - b.minZ);
-  camera.zoom = Math.min(zoomX, zoomZ) * 0.9;
-  camera.updateProjectionMatrix();
-  controls.update();
+  // Angled 3/4 aerial shot, not a straight-down look: a perfectly vertical
+  // camera makes "forward" horizontally ambiguous (PointerLockControls derives
+  // move direction from the camera's local axes), so WASD would do nothing
+  // useful until the user first moved the mouse. This angle keeps movement
+  // meaningful from the very first frame.
+  camera.position.set(cx - 9000, 8000, cz - 9000);
+  camera.lookAt(cx, 0, cz);
 }
-fitBtn.onclick = fitToMap;
 
 async function boot() {
   manifest = await fetch("data/manifest.json").then((r) => r.json());
 
   onResize();
-  fitToMap();
+  flyToOverview();
   renderPinList();
   renderPinMarkers();
 
+  const clock = new THREE.Clock();
   renderer.setAnimationLoop(() => {
-    controls.update();
+    const delta = Math.min(clock.getDelta(), 0.1);
+    applyMovement(delta);
     updateStreaming();
     renderer.render(scene, camera);
   });

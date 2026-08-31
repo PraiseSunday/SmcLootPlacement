@@ -28,10 +28,70 @@ html, body {
 
 #viewport canvas {
   display: block;
-  cursor: grab;
+  cursor: pointer;
 }
-#viewport.placing canvas {
-  cursor: crosshair;
+
+#crosshair {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  display: none;
+}
+#crosshair.visible {
+  display: block;
+}
+#crosshair::before, #crosshair::after {
+  content: "";
+  position: absolute;
+  background: rgba(223, 228, 238, 0.85);
+}
+#crosshair::before {
+  left: 50%; top: 0; bottom: 0; width: 2px; transform: translateX(-1px);
+}
+#crosshair::after {
+  top: 50%; left: 0; right: 0; height: 2px; transform: translateY(-1px);
+}
+#crosshair.placing::before, #crosshair.placing::after {
+  background: #ff5a5a;
+}
+
+#lock-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(13, 15, 20, 0.85);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: var(--text);
+  pointer-events: none;
+  text-align: center;
+}
+#lock-hint.hidden {
+  display: none;
+}
+
+#esc-tag {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  background: rgba(13, 15, 20, 0.75);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: var(--muted);
+  pointer-events: none;
+  display: none;
+}
+#esc-tag.visible {
+  display: block;
 }
 
 #hud {
