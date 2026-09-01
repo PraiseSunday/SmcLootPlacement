@@ -49,6 +49,14 @@ OUT_DIR = os.path.join(REPO_ROOT, "data", "terrain")
 PITCH_X = PITCH_Z = 1664.0     # 53248 / 32, == the scene's LODChunk ChunkSize
 ORIGIN_X = ORIGIN_Z = 416.0    # world centre of tile index 0
 
+# NeoX is LEFT-handed; three.js is right-handed. Emitting engine coordinates
+# unchanged renders the whole map as its own mirror image. Negating Z on the way
+# out (and reversing triangle winding to keep normals pointing outwards) puts the
+# viewer in the same chirality as the game -- a top-down view then reads +X right
+# and +Z up, matching the in-game map. See docs/handedness.md.
+def mirror(x, y, z):
+    return (x, y, -z)
+
 def main():
     tiles = json.load(open(os.path.join(REPO_ROOT, "tools", "terrain_tiles.json")))
 
@@ -75,7 +83,7 @@ def main():
             continue
 
         ox, oz = xi * PITCH_X + ORIGIN_X, yi * PITCH_Z + ORIGIN_Z
-        world_verts = [(x + ox, y, z + oz) for x, y, z in verts]
+        world_verts = [mirror(x + ox, y, z + oz) for x, y, z in verts]
         xs = [v[0] for v in world_verts]; ys = [v[1] for v in world_verts]; zs = [v[2] for v in world_verts]
         all_x += xs; all_y += ys; all_z += zs
         total_verts += len(world_verts); total_faces += len(faces)
@@ -87,7 +95,7 @@ def main():
             for x, y, z in world_verts:
                 f.write(struct.pack("<fff", x, y, z))
             for a, b, c in faces:
-                f.write(struct.pack("<III", a, b, c))
+                f.write(struct.pack("<III", a, c, b))
         manifest["tiles"].append({
             "xi": xi, "yi": yi, "file": f"terrain/{fname}",
             "minX": min(xs), "maxX": max(xs),

@@ -288,7 +288,7 @@ function updateStreaming() {
   }
   statsEl.textContent =
     `${loadedChunks.size} chunks loaded / ${manifest.chunks.length} total · ${pins.length} pins · ` +
-    `pos ${px.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${pz.toFixed(0)}`;
+    `pos ${px.toFixed(0)}, ${camera.position.y.toFixed(0)}, ${(-pz).toFixed(0)}`;  // shown in game coords
 }
 
 // --- terrain streaming (ground/roads/bridges -- a separate layer from the
@@ -430,13 +430,21 @@ function refreshUI() {
   renderPinMarkers();
 }
 
+// The scene is mirrored in Z relative to the game (NeoX is left-handed, three.js
+// is not -- see tools/build_terrain.py and docs/handedness.md), so everything
+// inside the viewer lives in mirrored space. The database stores TRUE game
+// coordinates, so pins flip as they cross that boundary, in both directions.
+const flipZ = (p) => ({ ...p, z: -p.z });
+const toViewer = flipZ;
+const toGame = flipZ;
+
 async function fetchPins() {
   const { data, error } = await supabase.from("pins").select("*");
   if (error) {
     console.error("failed to load pins", error);
     return;
   }
-  pins = data;
+  pins = data.map(toViewer);
   refreshUI();
 }
 
@@ -449,12 +457,12 @@ function subscribeToPinChanges() {
   supabase
     .channel("pins-changes")
     .on("postgres_changes", { event: "INSERT", schema: "public", table: "pins" }, (payload) => {
-      if (!pins.some((p) => p.id === payload.new.id)) pins.push(payload.new);
+      if (!pins.some((p) => p.id === payload.new.id)) pins.push(toViewer(payload.new));
       refreshUI();
     })
     .on("postgres_changes", { event: "UPDATE", schema: "public", table: "pins" }, (payload) => {
       const i = pins.findIndex((p) => p.id === payload.new.id);
-      if (i >= 0) pins[i] = payload.new;
+      if (i >= 0) pins[i] = toViewer(payload.new);
       refreshUI();
     })
     .on("postgres_changes", { event: "DELETE", schema: "public", table: "pins" }, (payload) => {
@@ -649,7 +657,7 @@ function openPinEditor(worldPos) {
     saveBtn.textContent = "Saving...";
     const { data, error } = await supabase
       .from("pins")
-      .insert({ x: worldPos.x, y: worldPos.y, z: worldPos.z, tier, note })
+      .insert({ ...toGame({ x: worldPos.x, y: worldPos.y, z: worldPos.z }), tier, note })
       .select()
       .single();
     if (error) {
@@ -662,7 +670,7 @@ function openPinEditor(worldPos) {
     // realtime echo of this exact insert can arrive before or after this
     // line resolves, so both paths need to be safe against seeing the row
     // twice (observed as a transient double-counted pin during testing).
-    if (!pins.some((p) => p.id === data.id)) pins.push(data);
+    if (!pins.some((p) => p.id === data.id)) pins.push(toViewer(data));
     refreshUI();
     closePinEditor();
   };
@@ -837,7 +845,8 @@ function applyMovement(delta) {
 // --- export / import --------------------------------------------------
 
 exportBtn.onclick = () => {
-  const blob = new Blob([JSON.stringify(pins, null, 2)], { type: "application/json" });
+  // exported/imported files carry TRUE game coordinates, like the database
+  const blob = new Blob([JSON.stringify(pins.map(toGame), null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
