@@ -302,12 +302,35 @@ function terrainKey(xi, yi) {
   return xi + "," + yi;
 }
 
+// There can be 700+ terrain tiles in flight at once (overview force-loads all
+// of them) -- fetching that many simultaneously exhausts the browser's
+// per-origin connection pool (net::ERR_INSUFFICIENT_RESOURCES). This caps how
+// many terrain fetches run concurrently; the rest just wait their turn.
+const TERRAIN_FETCH_CONCURRENCY = 8;
+let terrainFetchInFlight = 0;
+const terrainFetchQueue = [];
+
+function scheduleTerrainFetch(url) {
+  return new Promise((resolve, reject) => {
+    const run = () => {
+      terrainFetchInFlight++;
+      fetch(url).then(resolve, reject).finally(() => {
+        terrainFetchInFlight--;
+        const next = terrainFetchQueue.shift();
+        if (next) next();
+      });
+    };
+    if (terrainFetchInFlight < TERRAIN_FETCH_CONCURRENCY) run();
+    else terrainFetchQueue.push(run);
+  });
+}
+
 async function loadTerrainTile(entry) {
   const key = terrainKey(entry.xi, entry.yi);
   if (loadedTerrain.has(key)) return;
   const placeholder = { mesh: null, entry };
   loadedTerrain.set(key, placeholder);
-  const res = await fetch("data/" + entry.file);
+  const res = await scheduleTerrainFetch("data/" + entry.file);
   if (!res.ok) {
     console.error("terrain tile fetch failed", entry.file, res.status);
     return;
@@ -377,23 +400,26 @@ function updateTerrainFades() {
 
 function updateTerrainStreaming() {
   if (!terrainManifest) return;
-  // Unlike the building chunks, terrain tiles stay on the normal streaming
-  // bubble even in overview -- there are 763 of them (vs. 161 building
-  // chunks), and force-loading all of them at once is both unnecessary at
-  // overview zoom (ground detail doesn't read from that height) and enough
-  // simultaneous fetches to exhaust the browser's per-origin connection pool.
+  // Overview force-loads every terrain tile too (like the building chunks)
+  // so the default landing view isn't buildings floating over empty void.
+  // Safe now that fetches are queued through scheduleTerrainFetch above --
+  // that's what used to exhaust the browser's per-origin connection pool
+  // when all 763 tiles were requested at once.
   const px = camera.position.x, pz = camera.position.z;
   for (const entry of terrainManifest.tiles) {
+    if (overviewMode) { loadTerrainTile(entry); continue; }
     const ecx = (entry.minX + entry.maxX) / 2;
     const ecz = (entry.minZ + entry.maxZ) / 2;
     const d = Math.hypot(ecx - px, ecz - pz);
     if (d <= LOAD_RADIUS) loadTerrainTile(entry);
   }
-  for (const [key, rec] of [...loadedTerrain]) {
-    const ecx = (rec.entry.minX + rec.entry.maxX) / 2;
-    const ecz = (rec.entry.minZ + rec.entry.maxZ) / 2;
-    const d = Math.hypot(ecx - px, ecz - pz);
-    if (d > UNLOAD_RADIUS) unloadTerrainTile(key);
+  if (!overviewMode) {
+    for (const [key, rec] of [...loadedTerrain]) {
+      const ecx = (rec.entry.minX + rec.entry.maxX) / 2;
+      const ecz = (rec.entry.minZ + rec.entry.maxZ) / 2;
+      const d = Math.hypot(ecx - px, ecz - pz);
+      if (d > UNLOAD_RADIUS) unloadTerrainTile(key);
+    }
   }
 }
 
@@ -747,7 +773,7 @@ controls.addEventListener("lock", () => {
   crosshairEl.classList.add("visible");
   escTagEl.classList.add("visible");
   overviewMode = false;
-  scene.fog.far = UNLOAD_RADIUS;
+  setFogFar(UNLOAD_RADIUS);
 });
 controls.addEventListener("unlock", () => {
   lockHintEl.classList.remove("hidden");
@@ -844,6 +870,25 @@ function onResize() {
 }
 window.addEventListener("resize", onResize);
 
+// A raw ShaderMaterial's uniforms are a snapshot taken when the material is
+// constructed -- they don't auto-track scene.fog like a built-in material
+// would. heightMaterial/terrainMaterial capture fogFar once at page load, and
+// every chunk clone (loadChunk/loadTerrainTile) copies THAT frozen value, so
+// just setting scene.fog.far does nothing to what's actually rendered. This
+// pushes the new value onto the templates (so future clones pick it up) and
+// every already-loaded clone (so what's on screen right now updates too).
+function setFogFar(value) {
+  scene.fog.far = value;
+  heightMaterial.uniforms.fogFar.value = value;
+  terrainMaterial.uniforms.fogFar.value = value;
+  for (const rec of loadedChunks.values()) {
+    if (rec.mesh) rec.mesh.material.uniforms.fogFar.value = value;
+  }
+  for (const rec of loadedTerrain.values()) {
+    if (rec.mesh) rec.mesh.material.uniforms.fogFar.value = value;
+  }
+}
+
 function flyToOverview() {
   controls.unlock();
   const b = manifest.bbox;
@@ -858,7 +903,7 @@ function flyToOverview() {
   // camera's local axes well-defined for PointerLockControls (a perfectly
   // vertical look makes "forward" ambiguous).
   overviewMode = true;
-  scene.fog.far = OVERVIEW_FOG_FAR;
+  setFogFar(OVERVIEW_FOG_FAR);
   const span = Math.max(b.maxX - b.minX, b.maxZ - b.minZ);
   camera.position.set(cx - 300, span * 0.62, cz - 300);
   camera.lookAt(cx, 0, cz);

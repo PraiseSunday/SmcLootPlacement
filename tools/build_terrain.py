@@ -48,6 +48,28 @@ PITCH_Z = 1651.0
 ORIGIN_X = 60.0
 ORIGIN_Z = 210.0
 
+# The single global (pitch, origin) above is a good average fit but leaves
+# real local drift in places (confirmed by comparing two user-dropped pins --
+# one on a real building, one on its duplicate-looking baked footprint in the
+# terrain -- ~450 world units apart). A per-tile local correction was tried
+# and rejected: with only a handful of nearby buildings to calibrate against,
+# the "best" offset for a given tile kept sliding further away the more the
+# search range was widened -- a sign of an underconstrained, meaningless fit,
+# not a real correction. Only regions with enough nearby buildings (>=20) to
+# converge to a STABLE offset (confirmed by re-running with a much wider
+# search range and getting the same answer) are trusted here. Everywhere else
+# keeps the global default rather than risk a confidently-wrong local nudge.
+REGIONAL_OFFSETS = json.load(open(os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "terrain_regional_offsets.json")))
+
+
+def local_origin(tile_cx, tile_cz):
+    for r in REGIONAL_OFFSETS:
+        ccx, ccz = r["centroid"]
+        if (tile_cx - ccx) ** 2 + (tile_cz - ccz) ** 2 <= r["radius"] ** 2:
+            return ORIGIN_X + r["dox"], ORIGIN_Z + r["doz"]
+    return ORIGIN_X, ORIGIN_Z
+
 
 def main():
     tiles = json.load(open(os.path.join(REPO_ROOT, "tools", "terrain_tiles.json")))
@@ -74,7 +96,9 @@ def main():
         if not verts:
             continue
 
-        ox, oz = xi * PITCH_X + ORIGIN_X, yi * PITCH_Z + ORIGIN_Z
+        nominal_cx, nominal_cz = xi * PITCH_X + ORIGIN_X, yi * PITCH_Z + ORIGIN_Z
+        origin_x, origin_z = local_origin(nominal_cx, nominal_cz)
+        ox, oz = xi * PITCH_X + origin_x, yi * PITCH_Z + origin_z
         world_verts = [(x + ox, y, z + oz) for x, y, z in verts]
         xs = [v[0] for v in world_verts]; ys = [v[1] for v in world_verts]; zs = [v[2] for v in world_verts]
         all_x += xs; all_y += ys; all_z += zs
