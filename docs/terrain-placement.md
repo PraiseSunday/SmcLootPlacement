@@ -108,10 +108,22 @@ Two things, worth remembering for any similar job:
    geometry — which is possible here precisely *because* the LOD tiles duplicate
    the buildings — is both stricter and easier.
 
-## Known remaining cosmetic issue
+## The double-geometry side effect (resolved)
 
-Because `l1_*` tiles bake in simplified copies of the buildings, every building
-is now drawn twice: once as its full-detail mesh, once as coincident LOD
-geometry inside the terrain tile. With the placement correct these overlap
-exactly rather than sitting apart, but they still z-fight. Culling the
-building-like geometry out of the terrain tiles is a separate job.
+The same property that made placement verifiable — `l1_*` tiles baking in copies
+of the buildings — meant every building was drawn twice, as its full-detail mesh
+and as coincident LOD geometry, which z-fought once the placement was correct
+enough for them to overlap exactly.
+
+That is fixed: the tiles' companion `.gim` files split the index buffer into
+named sections, so the duplicate copies are cut out exactly at build time. See
+[`missing-data.md`](missing-data.md) and smcStuff `docs/10-asset-formats.md`
+("NeoX `.gim` section tables").
+
+## See also
+
+- [`handedness.md`](handedness.md) — the viewer mirrors Z relative to the game;
+  the world-space numbers on this page are **game** coordinates, not viewer ones,
+  which is why the shipped terrain bbox has Z negated relative to the table above.
+- [`building-rotation.md`](building-rotation.md) — `rot` is row-vector convention.
+- [`missing-data.md`](missing-data.md) — what is absent and why.
