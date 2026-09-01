@@ -17,15 +17,25 @@ prop instanced throughout the map, not the tile grid itself. Caught by cross-
 checking against house_info.json's known building world positions (ground
 truth): only 53% of buildings landed inside any predicted tile footprint.
 
-The values below instead come from a direct data-driven fit: grid-search over
+The base pitch below comes from a direct data-driven fit: grid-search over
 (pitch_x, pitch_z, origin_x, origin_z) maximizing how many of the 382 real
 building positions fall inside the terrain tile predicted to contain them.
-380/382 (99.5%) land within a 300-unit margin at this optimum; the 2 misses
-are isolated single buildings, not a systematic pattern.
   PITCH_X = 1691.0    (world X offset per +1 tile-x index)
   PITCH_Z = 1651.0    (world Z offset per +1 tile-y index)
-  ORIGIN_X = 60.0      ORIGIN_Z = 210.0
 Y (height) needs no offset -- tiles are already in world-space elevation.
+
+ORIGIN_X/ORIGIN_Z below is the ORIGINAL fit (60, 210) plus a user-measured
+correction (+417.4, +173.4), applied globally per explicit user request after
+they compared a pin dropped on a real building against a pin on its
+duplicate-looking baked footprint in the terrain at one spot on the map and
+measured the gap directly. This is a real, precisely-measured local offset
+applied map-wide (not re-derived from the weaker building-bbox-containment
+fit, which was shown to sometimes report "perfect" alignment on tiles that
+are visibly ~450 units off -- see REGIONAL_OFFSETS' comment for why that
+metric can't be trusted to self-correct this). It measurably improves some
+areas and measurably worsens others (checked against all 382 buildings
+before deploying) -- this is a deliberate accuracy-here-over-caution-
+elsewhere tradeoff, not an oversight.
 
 Writes one binary blob per tile (same SLPC format as the building chunks) into
 data/terrain/, plus data/terrain_manifest.json. Kept as a separate streaming
@@ -45,20 +55,20 @@ OUT_DIR = os.path.join(REPO_ROOT, "data", "terrain")
 
 PITCH_X = 1691.0
 PITCH_Z = 1651.0
-ORIGIN_X = 60.0
-ORIGIN_Z = 210.0
+ORIGIN_X = 60.0 + 417.4
+ORIGIN_Z = 210.0 + 173.4
 
-# The single global (pitch, origin) above is a good average fit but leaves
-# real local drift in places (confirmed by comparing two user-dropped pins --
-# one on a real building, one on its duplicate-looking baked footprint in the
-# terrain -- ~450 world units apart). A per-tile local correction was tried
-# and rejected: with only a handful of nearby buildings to calibrate against,
-# the "best" offset for a given tile kept sliding further away the more the
-# search range was widened -- a sign of an underconstrained, meaningless fit,
-# not a real correction. Only regions with enough nearby buildings (>=20) to
-# converge to a STABLE offset (confirmed by re-running with a much wider
-# search range and getting the same answer) are trusted here. Everywhere else
-# keeps the global default rather than risk a confidently-wrong local nudge.
+# On top of the (now pin-corrected) global default above, a handful of map
+# regions get an ADDITIONAL local nudge where there was enough independent
+# data to trust one: a per-tile local correction against individual buildings
+# was tried and rejected first -- with only a handful of nearby buildings to
+# calibrate against, the "best" offset for a given tile kept sliding further
+# away the more the search range was widened, including finding offsets that
+# contradicted the user's own direct pin measurement at that exact spot. Only
+# clusters where a bounded search (+-700) converged to an answer that did NOT
+# just hit that search cap are kept -- the ones that did hit it were shown to
+# be wrong, not just cautious. These deltas are relative to the pin-corrected
+# origin above, not the original (60, 210) fit.
 REGIONAL_OFFSETS = json.load(open(os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "terrain_regional_offsets.json")))
 

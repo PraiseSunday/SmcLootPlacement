@@ -476,16 +476,34 @@ async function deletePin(pin) {
   if (error) console.error("delete failed (admin sign-in required)", error);
 }
 
+// A cone/sphere blob's centroid doesn't tell you where its exact anchor
+// point is -- useless for lining a marker up against real geometry (a
+// building corner, another marker) with any precision. This is a proper
+// needle instead: a thin shaft tapering to a true point, with the group's
+// local origin AT that point (so `.position.set(x, y, z)` puts the point
+// exactly there, no offset fudging) and a small ball up top purely so it's
+// visible from a distance -- the ball is not the anchor, the tip is.
+function makeNeedleMarker(color, opts = {}) {
+  const height = opts.height ?? 220;
+  const mat = new THREE.MeshBasicMaterial({ color, transparent: !!opts.transparent, opacity: opts.opacity ?? 1 });
+  const shaftGeom = new THREE.CylinderGeometry(1.5, 0, height, 10);
+  shaftGeom.translate(0, height / 2, 0); // origin at the point, not the shaft's center
+  const shaft = new THREE.Mesh(shaftGeom, mat);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(18, 12, 12), mat);
+  head.position.set(0, height, 0);
+  const group = new THREE.Group();
+  group.add(shaft, head);
+  group.userData.material = mat; // single shared material -- one place to recolor both parts
+  return group;
+}
+
 function renderPinMarkers() {
   pinGroup.clear();
   for (const pin of pins) {
-    const geom = new THREE.ConeGeometry(60, 160, 12);
-    geom.rotateX(Math.PI);
-    const mat = new THREE.MeshBasicMaterial({ color: TIER_COLORS[pin.tier] || TIER_COLORS[1] });
-    const mesh = new THREE.Mesh(geom, mat);
-    mesh.position.set(pin.x, pin.y + 100, pin.z);
-    mesh.userData.pinId = pin.id;
-    pinGroup.add(mesh);
+    const marker = makeNeedleMarker(TIER_COLORS[pin.tier] || TIER_COLORS[1]);
+    marker.position.set(pin.x, pin.y, pin.z);
+    marker.userData.pinId = pin.id;
+    pinGroup.add(marker);
   }
 }
 
@@ -681,10 +699,7 @@ function pickAtCrosshair() {
   return { point: out, hit: false };
 }
 
-const previewMarker = new THREE.Mesh(
-  new THREE.SphereGeometry(45, 14, 14),
-  new THREE.MeshBasicMaterial({ color: 0x5aff8a, transparent: true, opacity: 0.85 })
-);
+const previewMarker = makeNeedleMarker(0x5aff8a, { transparent: true, opacity: 0.85 });
 previewMarker.visible = false;
 scene.add(previewMarker);
 
@@ -695,7 +710,7 @@ function updatePreview() {
   }
   const { point, hit } = pickAtCrosshair();
   previewMarker.position.copy(point);
-  previewMarker.material.color.setHex(hit ? 0x5aff8a : 0xffa64f);
+  previewMarker.userData.material.color.setHex(hit ? 0x5aff8a : 0xffa64f);
   previewMarker.visible = true;
 }
 
