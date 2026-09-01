@@ -29,8 +29,17 @@ For a camera above the world looking down, the screen basis must satisfy
 `right × up = toward the viewer = +Y`. With `right = +X` that forces `up = -Z`;
 with `up = +Z` it forces `right = -X`. **No camera orientation over right-handed
 data can show +X right and +Z up at the same time** — you would have to look at
-the world from underneath. So the mismatch is chirality, not framing, and no
-`camera.up` tweak can fix it.
+the world from underneath. So matching the game's *map* is a chirality change,
+not a framing one, and no `camera.up` tweak can achieve it.
+
+**Caveat — this is weaker than it first looks `[unconfirmed]`.** It proves the
+convention of the map UI, not the handedness of the 3D world. A right-handed
+world can still ship a +Z-up map: the player arrow's rotation is computed from
+world yaw, so the UI stays self-consistent either way, and the player never sees
+a straight-down camera to catch the difference. What is *confirmed* is that a
+top-down render of our data now matches the shipped map image. Whether that also
+matches the chirality of buildings as seen in the 3D world needs a separate check
+against something with known handedness in-world.
 
 ## Verified against the game's own minimap
 
