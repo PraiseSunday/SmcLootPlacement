@@ -19,9 +19,17 @@ The real scene graph is streamed from the `ContentPath` named in `bw_all06.scn`
 no instances at all (its `house` / `road` / `tree` elements are LOD-distance
 categories). Details in smcStuff `docs/10-asset-formats.md`.
 
-So the terrain layer carries the *shape* of every district, but the building layer
-only ever shows the loot-bearing subset. Districts that are mostly loot buildings
-look right; districts that are mostly scenery look empty.
+**Correction to an earlier version of this doc**, which claimed scenery-heavy
+districts therefore render empty. They do not. The `l1` tiles are whole-*scene*
+LOD chunks, so the rocks, props and non-loot structures are already present —
+baked into the terrain layer as simplified copies. Their `.gim` section names
+even identify them individually (`rock` 4112 sections, `items` 3701, `building`
+157; see smcStuff `docs/10-asset-formats.md`).
+
+So the accurate statement is narrower: scenery renders at **LOD quality only**,
+cannot be placed or manipulated independently, and cannot be told apart from
+terrain except through the section table. Only the 355 loot-bearing buildings get
+full-detail geometry.
 
 ## 2. Only the first submesh of each mesh is exported
 
@@ -50,9 +58,12 @@ problem. Porting the non-main submesh path is the highest-value fix available.
 
 ## 4. Cosmetic, known
 
-- Buildings render **twice**: the full mesh plus the simplified copy baked into
-  the `l1` terrain tiles, so they z-fight. Culling building geometry out of the
-  tiles is a separate job.
+- ~~Buildings render **twice**~~ **fixed.** They used to: the full mesh plus the
+  simplified copy baked into the `l1` tiles, z-fighting the whole map. The tiles'
+  `.gim` section tables now let `build_terrain.py` cut the duplicates out exactly
+  (143,137 faces, 17.8%). Coincident building/terrain vertices went from 7.81% to
+  0.06%, and `surface_*` ground coverage is provably untouched — 31,596 cells
+  before and after.
 - 5 instances have a negative `scale` component. That is authored mirroring, not a
   bug; it inverts winding, which is harmless under `DoubleSide` but will matter if
   backface culling is ever turned on.
