@@ -25,11 +25,23 @@ CELL = 2500  # world units per grid cell
 
 
 def to_world(pos, rot16, scale, local_xyz):
+    """Place a mesh-local vertex into world space.
+
+    house_info.json's `rot` is a row-major 4x4 in the ROW-VECTOR convention:
+    the engine computes v * M, not M * v, so the rotation is the TRANSPOSE of
+    the naive reading (column j supplies world axis j). Translation lives in
+    `pos` alone -- the matrix's last row/column is always [0,0,0,1].
+
+    All 382 matrices are orthonormal with det +1 (no mirroring); 379 are pure
+    yaw. Reading them column-vector-style therefore yaws every building the
+    wrong way, which is invisible for the 101 instances at yaw 0 and reads as a
+    180-degree flip at yaw 90/270 -- see docs/building-rotation.md.
+    """
     M = [rot16[0:4], rot16[4:8], rot16[8:12], rot16[12:16]]
     lx, ly, lz = (local_xyz[i] * scale[i] for i in range(3))
-    wx = M[0][0] * lx + M[0][1] * ly + M[0][2] * lz + pos[0]
-    wy = M[1][0] * lx + M[1][1] * ly + M[1][2] * lz + pos[1]
-    wz = M[2][0] * lx + M[2][1] * ly + M[2][2] * lz + pos[2]
+    wx = M[0][0] * lx + M[1][0] * ly + M[2][0] * lz + pos[0]
+    wy = M[0][1] * lx + M[1][1] * ly + M[2][1] * lz + pos[1]
+    wz = M[0][2] * lx + M[1][2] * ly + M[2][2] * lz + pos[2]
     return (wx, wy, wz)
 
 
