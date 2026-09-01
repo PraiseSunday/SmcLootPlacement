@@ -54,9 +54,9 @@ streaming.
 ## Coordinates
 
 The viewer renders **mirrored in Z** relative to the game, because NeoX is
-left-handed and three.js is not. The database, the export/import JSON and the
-on-screen coordinate readout all use **true game coordinates**; `toViewer` /
-`toGame` in `app.js` flip Z at that boundary. See
+left-handed and three.js is not. The database and the on-screen coordinate
+readout use **true game coordinates**; `toViewer` / `toGame` in `app.js` flip Z
+at that boundary. See
 [`docs/handedness.md`](docs/handedness.md).
 
 ## Documentation

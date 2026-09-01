@@ -30,9 +30,6 @@ const fitBtn = document.getElementById("fit-btn");
 const nearestBtn = document.getElementById("nearest-btn");
 const collapseBtn = document.getElementById("collapse-btn");
 const panelEl = document.getElementById("panel");
-const exportBtn = document.getElementById("export-btn");
-const importBtn = document.getElementById("import-btn");
-const importFile = document.getElementById("import-file");
 const lockHintEl = document.getElementById("lock-hint");
 const crosshairEl = document.getElementById("crosshair");
 const escTagEl = document.getElementById("esc-tag");
@@ -810,10 +807,28 @@ controls.addEventListener("unlock", () => {
   lockHintEl.classList.remove("hidden");
   escTagEl.classList.remove("visible");
   if (!placing) crosshairEl.classList.remove("visible");
+  releaseAllKeys();
 });
 
+// Movement state is a latch: a key stays held until its keyup arrives. Anything
+// that takes focus away mid-press (a dialog, alt-tab, a download) swallows that
+// keyup, so the key reads as held forever -- and since applyMovement only runs
+// while pointer-locked, it surfaces later as the camera flying off on its own
+// the next time you lock in, with nothing touching the keyboard. Release
+// everything whenever focus or the pointer lock goes away.
+function releaseAllKeys() {
+  for (const code of Object.keys(keys)) keys[code] = false;
+}
+
+const isTyping = (e) => {
+  const t = e.target;
+  return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable);
+};
+
 window.addEventListener("keydown", (e) => {
-  if (e.code in keys) keys[e.code] = true;
+  // Typing a note must not drive the camera -- "wasd" in a text field would
+  // otherwise latch all four movement keys.
+  if (!isTyping(e) && e.code in keys) keys[e.code] = true;
   if (e.key === "Escape") {
     setPlacing(false);
     closePinEditor();
@@ -821,6 +836,10 @@ window.addEventListener("keydown", (e) => {
 });
 window.addEventListener("keyup", (e) => {
   if (e.code in keys) keys[e.code] = false;
+});
+window.addEventListener("blur", releaseAllKeys);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) releaseAllKeys();
 });
 
 // Scroll wheel controls altitude while flying -- feels more natural than
@@ -849,49 +868,6 @@ function applyMovement(delta) {
   const vertical = (keys.Space ? 1 : 0) - (keys.ControlLeft || keys.ControlRight ? 1 : 0);
   if (vertical) camera.position.y += vertical * speed;
 }
-
-// --- export / import --------------------------------------------------
-
-exportBtn.onclick = () => {
-  // exported/imported files carry TRUE game coordinates, like the database
-  const blob = new Blob([JSON.stringify(pins.map(toGame), null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "smc-loot-pins.json";
-  a.click();
-  URL.revokeObjectURL(url);
-};
-
-importBtn.onclick = () => importFile.click();
-
-importFile.onchange = async () => {
-  const file = importFile.files[0];
-  if (!file) return;
-  try {
-    const incoming = JSON.parse(await file.text());
-    // Always inserted as NEW rows -- votes/id aren't taken from the file, so
-    // importing can't be used to smuggle in fake vote counts. Falls back to
-    // the old "label" field for files exported before the tier system.
-    const rows = incoming
-      .filter((p) => p && typeof p.x === "number" && typeof p.y === "number" && typeof p.z === "number")
-      .map((p) => ({
-        x: p.x, y: p.y, z: p.z,
-        tier: [1, 2, 3].includes(p.tier) ? p.tier : 1,
-        note: p.note || p.label || "",
-      }));
-    if (!rows.length) {
-      alert("No valid pins found in that file.");
-      return;
-    }
-    const { error } = await supabase.from("pins").insert(rows);
-    if (error) throw error;
-    await fetchPins();
-  } catch (err) {
-    alert("Could not import that file: " + err.message);
-  }
-  importFile.value = "";
-};
 
 // --- boot -----------------------------------------------------------------
 

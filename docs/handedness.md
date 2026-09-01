@@ -9,9 +9,8 @@ image — layout flipped, and every asymmetric building reversed.
 The builders now negate Z on the way out (`mirror()` in `build_terrain.py`,
 `to_world()` in `build_chunks.py`) and reverse triangle winding so normals still
 point outwards. **Everything inside the viewer is therefore in mirrored space.**
-The database, the export/import JSON, and the on-screen coordinate readout all
-carry TRUE game coordinates; `toViewer` / `toGame` in `app.js` flip Z at that
-boundary.
+The database and the on-screen coordinate readout carry TRUE game coordinates;
+`toViewer` / `toGame` in `app.js` flip Z at that boundary.
 
 ## Why it has to be a mirror, not a camera setting
 

@@ -251,13 +251,6 @@ html, body {
   color: var(--text);
 }
 
-#io-row {
-  display: flex;
-  gap: 6px;
-  padding: 8px;
-  border-top: 1px solid var(--border);
-}
-
 #admin-btn {
   margin: 0 8px 8px;
   font-size: 11px;
@@ -329,10 +322,6 @@ button.primary {
   border-color: var(--accent);
   color: #06131f;
   font-weight: 600;
-}
-
-#io-row button {
-  flex: 1;
 }
 
 #pin-editor {
