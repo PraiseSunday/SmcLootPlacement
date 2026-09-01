@@ -74,6 +74,14 @@ camera.position.set(0, 1500, 0);
 
 const controls = new PointerLockControls(camera, renderer.domElement);
 
+// Chunk/tile filenames are grid indices, so a rebuild can reuse a name for a
+// DIFFERENT set of buildings. Neither python -m http.server nor GitHub Pages
+// sends Cache-Control or ETag on these, which lets a browser serve them from
+// heuristic freshness without revalidating -- a stale mix of old buildings on
+// new terrain reads as buildings scattered off their footprints. Revalidate
+// every data fetch (still a cheap 304 when nothing changed).
+const NO_STALE = { cache: "no-cache" };
+
 const chunkGroup = new THREE.Group();
 scene.add(chunkGroup);
 const terrainGroup = new THREE.Group();
@@ -197,7 +205,7 @@ async function loadChunk(entry) {
   if (loadedChunks.has(key)) return;
   const placeholder = { mesh: null, entry };
   loadedChunks.set(key, placeholder);
-  const res = await fetch("data/" + entry.file);
+  const res = await fetch("data/" + entry.file, NO_STALE);
   if (!res.ok) {
     console.error("chunk fetch failed", entry.file, res.status);
     return;
@@ -314,7 +322,7 @@ function scheduleTerrainFetch(url) {
   return new Promise((resolve, reject) => {
     const run = () => {
       terrainFetchInFlight++;
-      fetch(url).then(resolve, reject).finally(() => {
+      fetch(url, NO_STALE).then(resolve, reject).finally(() => {
         terrainFetchInFlight--;
         const next = terrainFetchQueue.shift();
         if (next) next();
@@ -934,8 +942,8 @@ function flyToOverview() {
 }
 
 async function boot() {
-  manifest = await fetch("data/manifest.json").then((r) => r.json());
-  terrainManifest = await fetch("data/terrain_manifest.json").then((r) => r.json());
+  manifest = await fetch("data/manifest.json", NO_STALE).then((r) => r.json());
+  terrainManifest = await fetch("data/terrain_manifest.json", NO_STALE).then((r) => r.json());
 
   onResize();
   flyToOverview();
