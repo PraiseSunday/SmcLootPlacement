@@ -7,35 +7,28 @@ extracted locally into tools/_cache/terrain_meshes/ (gitignored, one-time export
 via extract_terrain_batch.py-equivalent -- not committed, matches the building
 mesh cache convention).
 
-Each tile's vertex data is in TILE-LOCAL space (not world space) -- no config
-anywhere states the grid pitch. A first attempt reverse-engineered it from
-pairs of adjacent tiles that appeared to share duplicate boundary vertices
-(props straddling the seam), solved by nearest-neighbor-matching the touching
-edge. That produced a plausible-looking, sub-unit-precision fit (-1663/-1133.75)
-that was WRONG -- it was actually measuring the repeat spacing of a decorative
-prop instanced throughout the map, not the tile grid itself. Caught by cross-
-checking against house_info.json's known building world positions (ground
-truth): only 53% of buildings landed inside any predicted tile footprint.
+Each tile's vertex data is in TILE-LOCAL space, centred on the tile (local
+coordinates run roughly +-832 about 0), so placing a tile only needs its world
+centre. Tile indices are signed and centred on the map origin: xi in [-16, 15],
+yi in [-15, 15].
 
-The base pitch below comes from a direct data-driven fit: grid-search over
-(pitch_x, pitch_z, origin_x, origin_z) maximizing how many of the 382 real
-building positions fall inside the terrain tile predicted to contain them.
-  PITCH_X = 1691.0    (world X offset per +1 tile-x index)
-  PITCH_Z = 1651.0    (world Z offset per +1 tile-y index)
+The grid comes from the scene file the client itself loads,
+scene/bw_all06_xc/bw_all06.scn (NeoX property format, magic 0x0D4159C1 -- see
+docs/terrain-placement.md for the decode). Its Terrain/Landscape node states:
+
+  GridSize   = 26      heightfield cell size
+  NumColumns = 2048    heightfield cells across
+  NumRows    = 2048
+  OffsetX    = -27040  world position of the heightfield's low corner
+  OffsetZ    = -27040
+
+so the terrain spans 26 * 2048 = 53248 units from -27040 to +26208. That is
+exactly 32 tiles of 53248 / 32 = 1664, which the same file confirms directly as
+a LODChunk ChunkSize of 1664 (the finer 832 chunk level is the l0 tier we don't
+use). Tile xi = -16 therefore has its low edge at -27040 and its CENTRE at
+-27040 + 832 = -26208, giving centre(xi) = xi * 1664 + 416.
+
 Y (height) needs no offset -- tiles are already in world-space elevation.
-
-ORIGIN_X/ORIGIN_Z below is the ORIGINAL fit (60, 210) plus a user-measured
-correction (+417.4, +173.4), applied globally per explicit user request after
-they compared a pin dropped on a real building against a pin on its
-duplicate-looking baked footprint in the terrain at one spot on the map and
-measured the gap directly. This is a real, precisely-measured local offset
-applied map-wide (not re-derived from the weaker building-bbox-containment
-fit, which was shown to sometimes report "perfect" alignment on tiles that
-are visibly ~450 units off -- see REGIONAL_OFFSETS' comment for why that
-metric can't be trusted to self-correct this). It measurably improves some
-areas and measurably worsens others (checked against all 382 buildings
-before deploying) -- this is a deliberate accuracy-here-over-caution-
-elsewhere tradeoff, not an oversight.
 
 Writes one binary blob per tile (same SLPC format as the building chunks) into
 data/terrain/, plus data/terrain_manifest.json. Kept as a separate streaming
@@ -53,33 +46,8 @@ import mesh_to_obj
 CACHE = os.path.join(REPO_ROOT, "tools", "_cache", "terrain_meshes")
 OUT_DIR = os.path.join(REPO_ROOT, "data", "terrain")
 
-PITCH_X = 1691.0
-PITCH_Z = 1651.0
-ORIGIN_X = 60.0 + 417.4
-ORIGIN_Z = 210.0 + 173.4
-
-# On top of the (now pin-corrected) global default above, a handful of map
-# regions get an ADDITIONAL local nudge where there was enough independent
-# data to trust one: a per-tile local correction against individual buildings
-# was tried and rejected first -- with only a handful of nearby buildings to
-# calibrate against, the "best" offset for a given tile kept sliding further
-# away the more the search range was widened, including finding offsets that
-# contradicted the user's own direct pin measurement at that exact spot. Only
-# clusters where a bounded search (+-700) converged to an answer that did NOT
-# just hit that search cap are kept -- the ones that did hit it were shown to
-# be wrong, not just cautious. These deltas are relative to the pin-corrected
-# origin above, not the original (60, 210) fit.
-REGIONAL_OFFSETS = json.load(open(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "terrain_regional_offsets.json")))
-
-
-def local_origin(tile_cx, tile_cz):
-    for r in REGIONAL_OFFSETS:
-        ccx, ccz = r["centroid"]
-        if (tile_cx - ccx) ** 2 + (tile_cz - ccz) ** 2 <= r["radius"] ** 2:
-            return ORIGIN_X + r["dox"], ORIGIN_Z + r["doz"]
-    return ORIGIN_X, ORIGIN_Z
-
+PITCH_X = PITCH_Z = 1664.0     # 53248 / 32, == the scene's LODChunk ChunkSize
+ORIGIN_X = ORIGIN_Z = 416.0    # world centre of tile index 0
 
 def main():
     tiles = json.load(open(os.path.join(REPO_ROOT, "tools", "terrain_tiles.json")))
@@ -106,9 +74,7 @@ def main():
         if not verts:
             continue
 
-        nominal_cx, nominal_cz = xi * PITCH_X + ORIGIN_X, yi * PITCH_Z + ORIGIN_Z
-        origin_x, origin_z = local_origin(nominal_cx, nominal_cz)
-        ox, oz = xi * PITCH_X + origin_x, yi * PITCH_Z + origin_z
+        ox, oz = xi * PITCH_X + ORIGIN_X, yi * PITCH_Z + ORIGIN_Z
         world_verts = [(x + ox, y, z + oz) for x, y, z in verts]
         xs = [v[0] for v in world_verts]; ys = [v[1] for v in world_verts]; zs = [v[2] for v in world_verts]
         all_x += xs; all_y += ys; all_z += zs
