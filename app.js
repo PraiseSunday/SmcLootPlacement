@@ -29,6 +29,7 @@ const addBtn = document.getElementById("add-btn");
 const fitBtn = document.getElementById("fit-btn");
 const nearestBtn = document.getElementById("nearest-btn");
 const kindFilterEl = document.getElementById("kind-filter");
+const kindSetupEl = document.getElementById("kind-setup");
 const collapseBtn = document.getElementById("collapse-btn");
 const panelEl = document.getElementById("panel");
 const lockHintEl = document.getElementById("lock-hint");
@@ -615,6 +616,7 @@ const pinColor = (pin) =>
 // it fails EVERY save. Probed once at boot; until it succeeds the UI stays
 // chest-only and writes no `kind` at all.
 let kindSupported = false;
+let kindProbed = false;
 const visibleKinds = new Set(Object.keys(PIN_KINDS));
 
 // One chip per kind; clicking toggles that kind's pins in the 3D view, the
@@ -641,8 +643,16 @@ function renderKindFilter() {
 async function detectKindSupport() {
   const { error } = await supabase.from("pins").select("kind").limit(1);
   kindSupported = !error;
+  kindProbed = true;
+  renderKindSetupHint();
   if (!error) return;
   console.warn("pins.kind not present -- run db/migrations/001_pin_kinds.sql to enable pin types");
+}
+
+// Without the migration the whole feature is invisible and looks like a bug, so
+// say so -- but only to the one person who can fix it, not to every visitor.
+function renderKindSetupHint() {
+  kindSetupEl.classList.toggle("hidden", !kindProbed || kindSupported || !isAdmin);
 }
 
 minimapToggle.onclick = () => minimapPanel.classList.toggle("hidden");
@@ -839,6 +849,7 @@ function setAdminState(on) {
   isAdmin = on;
   adminBtn.textContent = on ? "Admin (signed in) — sign out" : "Admin sign-in";
   adminBtn.classList.toggle("signed-in", on);
+  renderKindSetupHint();
   renderPinList();
 }
 
