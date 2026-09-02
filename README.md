@@ -12,9 +12,9 @@ which is exactly what loot pins need. So the site renders the real thing:
 
 - **763 terrain tiles** — ground, roads, bridges and scenery, from the game's LOD
   chunks
-- **376 buildings** — full-detail meshes, individually placed and rotated
+- **382 buildings** — full-detail meshes, individually placed and rotated
 
-Both are streamed in around the camera, so the whole 75 MB of geometry is never
+Both are streamed in around the camera, so the whole 87 MB of geometry is never
 loaded at once.
 
 ## Running it locally

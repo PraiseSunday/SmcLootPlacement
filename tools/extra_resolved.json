@@ -1,4 +1,13 @@
 {
+ "hjfs_items_inside_hjjd_jizhuangxiang_03": {
+  "base": "items_inside_jizhuangxiang_03",
+  "parts": [
+   "items_inside_jizhuangxiang_03"
+  ],
+  "paths": {
+   "items_inside_jizhuangxiang_03": "model_new\\scene\\items\\inside\\items_inside_jizhuangxiang_03.gim"
+  }
+ },
  "hyd_building_hyd_01": {
   "base": "building_hyd_01",
   "parts": [
@@ -76,6 +85,15 @@
    "building_hyd_08_b": "model_new\\scene\\building\\hongyadong\\building_hyd_08_b.gim"
   }
  },
+ "msq_building_shigong_03": {
+  "base": "building_common_shigong_03",
+  "parts": [
+   "building_common_shigong_03"
+  ],
+  "paths": {
+   "building_common_shigong_03": "model_new\\scene\\building\\common\\building_common_shigong_03.gim"
+  }
+ },
  "pubu_building_xl_csd_a": {
   "base": "building_xl_csd_a",
   "parts": [
@@ -92,6 +110,57 @@
   ],
   "paths": {
    "building_xl_csd_b": "model_new\\scene\\building\\xunlianchang\\building_xl_csd_b.gim"
+  }
+ },
+ "xx_building_sushelou": {
+  "base": "building_xuexiao_sushelou",
+  "parts": [
+   "building_xuexiao_sushelou_a",
+   "building_xuexiao_sushelou_b",
+   "building_xuexiao_sushelou_d"
+  ],
+  "paths": {
+   "building_xuexiao_sushelou_a": "model_new\\scene\\building\\xuexiao\\building_xuexiao_sushelou_a.gim",
+   "building_xuexiao_sushelou_b": "model_new\\scene\\building\\xuexiao\\building_xuexiao_sushelou_b.gim",
+   "building_xuexiao_sushelou_d": "model_new\\scene\\building\\xuexiao\\building_xuexiao_sushelou_d.gim"
+  }
+ },
+ "ysg_building_meishuguan_01": {
+  "base": "building_meishuguan",
+  "parts": [
+   "building_meishuguan_a_01",
+   "building_meishuguan_a_02",
+   "building_meishuguan_a_03",
+   "building_meishuguan_a_04",
+   "building_meishuguan_b_01",
+   "building_meishuguan_b_02",
+   "building_meishuguan_b_03",
+   "building_meishuguan_b_04"
+  ],
+  "paths": {
+   "building_meishuguan_a_01": "model_new\\scene\\building\\common\\building_meishuguan_a_01.gim",
+   "building_meishuguan_a_02": "model_new\\scene\\building\\common\\building_meishuguan_a_02.gim",
+   "building_meishuguan_a_03": "model_new\\scene\\building\\common\\building_meishuguan_a_03.gim",
+   "building_meishuguan_a_04": "model_new\\scene\\building\\common\\building_meishuguan_a_04.gim",
+   "building_meishuguan_b_01": "model_new\\scene\\building\\common\\building_meishuguan_b_01.gim",
+   "building_meishuguan_b_02": "model_new\\scene\\building\\common\\building_meishuguan_b_02.gim",
+   "building_meishuguan_b_03": "model_new\\scene\\building\\common\\building_meishuguan_b_03.gim",
+   "building_meishuguan_b_04": "model_new\\scene\\building\\common\\building_meishuguan_b_04.gim"
+  }
+ },
+ "ytq_building_youtingjianzhu_01": {
+  "base": "building_common_youtingjianzhu_01",
+  "parts": [
+   "building_common_youtingjianzhu_01",
+   "building_common_youtingjianzhu_01a",
+   "building_common_youtingjianzhu_01b",
+   "building_common_youtingjianzhu_01c"
+  ],
+  "paths": {
+   "building_common_youtingjianzhu_01": "model_new\\scene\\building\\common\\building_common_youtingjianzhu_01.gim",
+   "building_common_youtingjianzhu_01a": "model_new\\scene\\building\\common\\building_common_youtingjianzhu_01a.gim",
+   "building_common_youtingjianzhu_01b": "model_new\\scene\\building\\common\\building_common_youtingjianzhu_01b.gim",
+   "building_common_youtingjianzhu_01c": "model_new\\scene\\building\\common\\building_common_youtingjianzhu_01c.gim"
   }
  }
 }

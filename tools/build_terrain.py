@@ -110,10 +110,9 @@ def building_boxes():
                 verts.extend(mesh_cache[mp])
         if not verts:
             continue
-        step = max(1, len(verts) // 400)          # AABB only; no need for every vertex
         lo = [1e30] * 3
         hi = [-1e30] * 3
-        for v in verts[::step]:
+        for v in verts:
             w = build_chunks.to_world(e["pos"], e["rot"], e["scale"], v)
             for i in range(3):
                 lo[i] = min(lo[i], w[i])

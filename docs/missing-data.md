@@ -28,7 +28,7 @@ even identify them individually (`rock` 4112 sections, `items` 3701, `building`
 
 So the accurate statement is narrower: scenery renders at **LOD quality only**,
 cannot be placed or manipulated independently, and cannot be told apart from
-terrain except through the section table. Only the 376 loot-bearing buildings get
+terrain except through the section table. Only the 382 loot-bearing buildings get
 full-detail geometry.
 
 ## 2. ~~Only the first submesh of each mesh is exported~~ resolved
@@ -45,10 +45,10 @@ smcStuff `docs/10-asset-formats.md`.
 The real gap behind "this building has no interior" was a naming one, and it is
 now fixed — see [`interiors.md`](interiors.md).
 
-## 3. 6 of 382 instances have no geometry at all
+## 3. ~~6 of 382 instances have no geometry at all~~ resolved
 
-This section used to list three causes. Two of them are now fixed and only the
-third is left.
+This section used to list three causes. All three are now fixed; every
+`house_info` instance has full-detail geometry. Kept for the record.
 
 ~~25 parts fail with `unresolved vertex layout (type=-1, bone_type=0)`~~
 **fixed.** That error was a missing case in `mesh_to_obj`'s vertex-layout
@@ -89,12 +89,27 @@ The two fixes are independent and compose:
 | **old parser** | 355 | 367 |
 | **vertex-colour fix** | 364 | **376** |
 
-**What is left: 5 building types, 6 instances**, which the name resolver never
-mapped to a `.gim` at all — `hjfs_items_inside_hjjd_jizhuangxiang_03` (2),
-`msq_building_shigong_03`, `ytq_building_youtingjianzhu_01`,
-`ysg_building_meishuguan_01`, `xx_building_sushelou`. That is a name-lookup gap
-of the kind described in section 1, not a parser gap: there are now **zero** mesh
-parse failures and zero unsplit paths.
+~~What is left: 5 building types, 6 instances~~ **fixed — the map is now
+382/382.** Those five were a name-lookup gap, not a parser gap: the resolver
+derives a model name from the `house_info` type by stripping the district
+prefix, and these five spell theirs differently. `scene_model_inf.json` (5282
+scene model names) supplies the real spelling, and probing every known
+`model_new\scene\...` directory for it finds all 17 parts packaged:
+
+| `house_info` type | model name(s) | directory |
+| --- | --- | --- |
+| `ysg_building_meishuguan_01` | `building_meishuguan_{a,b}_{01..04}` (8 parts) | `building\common` |
+| `msq_building_shigong_03` | `building_common_shigong_03` | `building\common` |
+| `ytq_building_youtingjianzhu_01` | `building_common_youtingjianzhu_01{,a,b,c}` | `building\common` |
+| `xx_building_sushelou` | `building_xuexiao_sushelou_{a,b,d}` | `building\xuexiao` |
+| `hjfs_items_inside_hjjd_jizhuangxiang_03` | `items_inside_jizhuangxiang_03` | `items\inside` |
+
+The visible one is `ysg_building_meishuguan_01`, the art museum — a 3320 × 1380
+complex with a colonnaded forecourt and a basement level (parts `_a_03`/`_a_04`
+reach 291 units *below* the placement origin). Players had already pinned five
+chests inside its footprint; with no geometry to hit, every one of those pins
+fell through to the `y = 0` fallback plane. They are recorded in
+`tools/extra_resolved.json` alongside the other hand-found names.
 
 ## 4. Cosmetic, known
 
