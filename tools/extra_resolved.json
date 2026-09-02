@@ -94,6 +94,32 @@
    "building_common_shigong_03": "model_new\\scene\\building\\common\\building_common_shigong_03.gim"
   }
  },
+ "msq_x_building_common_sg_01": {
+  "base": "x_building_common_sg_01",
+  "parts": [
+   "x_building_common_sg_01",
+   "x_building_common_sg_01a",
+   "x_building_common_sg_01b"
+  ],
+  "paths": {
+   "x_building_common_sg_01": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01.gim",
+   "x_building_common_sg_01a": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01a.gim",
+   "x_building_common_sg_01b": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01b.gim"
+  }
+ },
+ "msq_x_building_common_sg_02": {
+  "base": "x_building_common_sg_02",
+  "parts": [
+   "x_building_common_sg_02",
+   "x_building_common_sg_02a",
+   "x_building_common_sg_02b"
+  ],
+  "paths": {
+   "x_building_common_sg_02": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_02.gim",
+   "x_building_common_sg_02a": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_02a.gim",
+   "x_building_common_sg_02b": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_02b.gim"
+  }
+ },
  "pubu_building_xl_csd_a": {
   "base": "building_xl_csd_a",
   "parts": [
@@ -110,6 +136,36 @@
   ],
   "paths": {
    "building_xl_csd_b": "model_new\\scene\\building\\xunlianchang\\building_xl_csd_b.gim"
+  }
+ },
+ "tlzx_x_building_common_sg_01": {
+  "base": "x_building_common_sg_01",
+  "parts": [
+   "x_building_common_sg_01",
+   "x_building_common_sg_01a",
+   "x_building_common_sg_01b"
+  ],
+  "paths": {
+   "x_building_common_sg_01": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01.gim",
+   "x_building_common_sg_01a": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01a.gim",
+   "x_building_common_sg_01b": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01b.gim"
+  }
+ },
+ "tlzx_x_building_kejiguan_a": {
+  "base": "building_kejiguan",
+  "parts": [
+   "building_kejiguan_a",
+   "building_kejiguan_b",
+   "building_kejiguan_b_ggp",
+   "building_kejiguan_c",
+   "building_kejiguan_d"
+  ],
+  "paths": {
+   "building_kejiguan_a": "model_new\\scene\\building\\common\\building_kejiguan_a.gim",
+   "building_kejiguan_b": "model_new\\scene\\building\\common\\building_kejiguan_b.gim",
+   "building_kejiguan_b_ggp": "model_new\\scene\\building\\common\\building_kejiguan_b_ggp.gim",
+   "building_kejiguan_c": "model_new\\scene\\building\\common\\building_kejiguan_c.gim",
+   "building_kejiguan_d": "model_new\\scene\\building\\common\\building_kejiguan_d.gim"
   }
  },
  "xx_building_sushelou": {

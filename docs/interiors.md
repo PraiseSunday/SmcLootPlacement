@@ -51,8 +51,28 @@ pairs and the entrance doors, aligned with the shell's window bays.
 
 ## What is still missing, and the fallback
 
-`x_building_kejiguan_b` is named in `scene_model_inf.json` but is not packaged in
-any `res*.npk` — the interior model was cut, so that building stays a shell.
+~~`x_building_kejiguan_b` is not packaged, so that building stays a shell.~~
+**It ships under the unsplit name.** `x_model\05_nex` holds a *re-split* of the
+science museum — `x_building_kejiguan_a`, `a1`, `c`, `dj_01`, `dj_02` — and only
+that split's interior file is absent. The original single-piece family is right
+there in `scene\building\common`: `building_kejiguan_{a,b,b_ggp,c,d}`, all
+packaged, all authored at the same origin (`building_kejiguan_c` is byte-for-byte
+the same mesh as `x_building_kejiguan_c`, which is what pins the two sets to one
+frame).
+
+`tlzx_x_building_kejiguan_a` now resolves to that family instead. The change is
+bigger than an interior: the resolver had matched only `x_building_kejiguan_a`,
+one piece of the re-split, so the museum was rendering as a slice through the
+middle of its own footprint — which is what it looks like from the ground, a
+building standing in the wrong place. Projecting each candidate's vertices onto
+the game's top-down map settles it: the single `x_` piece puts 60% of its
+vertices on the drawn building, the full family 80%, and the family's outline
+traces the notched north-west corner, the east block and the car-park loop that
+`building_kejiguan_d` supplies.
+
+A useful shape to remember: an `x_model\NN_nex` name is a re-export of an asset
+that also exists unsplit under its plain name, and the split is not always
+complete. Check the plain name before recording a model as cut.
 
 There is a second, universal source if it is ever needed: every `_a` mesh with a
 second submesh carries a **collision block** covering the whole building,
