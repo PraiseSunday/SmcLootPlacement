@@ -78,8 +78,16 @@ def main():
         chunk = chunks.setdefault((cx, cz), {"verts": [], "faces": [], "buildings": 0})
         instance_ok = False
         for part, gim_path in info["paths"].items():
-            mesh_path = gim_path.replace(".gim", ".mesh")
-            local_path = os.path.join(CACHE, "meshes", mesh_path)
+            # A few entries carry two comma-joined candidate locations for the
+            # same part (the model appears under both scene\building and
+            # scene\items); take whichever one is actually on disk.
+            local_path = None
+            for cand in gim_path.split(","):
+                cand_path = os.path.join(CACHE, "meshes", cand.strip().replace(".gim", ".mesh"))
+                if local_path is None or os.path.exists(cand_path):
+                    local_path = cand_path
+                if os.path.exists(cand_path):
+                    break
             if local_path not in mesh_cache:
                 try:
                     _ver, _mtype, verts, faces = mesh_to_obj.parse(local_path)

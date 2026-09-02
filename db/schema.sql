@@ -11,7 +11,8 @@ create table public.pins (
   x double precision not null,
   y double precision not null,
   z double precision not null,
-  tier smallint not null default 1 check (tier between 1 and 3),
+  kind text not null default 'chest' check (kind in ('chest', 'jumppad', 'recharger')),
+  tier smallint not null default 1 check (tier between 1 and 3),   -- chests only
   note text default '',
   votes integer not null default 0,
   created_at timestamptz not null default now()

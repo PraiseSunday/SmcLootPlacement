@@ -354,6 +354,47 @@ button.primary {
 #pin-editor .row button {
   flex: 1;
 }
+#kind-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  border-top: 1px solid var(--border);
+}
+#kind-filter.hidden {
+  display: none;
+}
+
+.kind-chip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font: inherit;
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  opacity: 0.45;
+}
+
+.kind-chip.on { opacity: 1; }
+
+.kind-chip .dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+#pe-error {
+  color: #ff8a8a;
+  font-size: 12px;
+  padding: 2px 0;
+}
+
 .tier-btn {
   font-weight: 600;
 }

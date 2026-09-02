@@ -28,6 +28,7 @@ const panelListEl = document.getElementById("pin-list");
 const addBtn = document.getElementById("add-btn");
 const fitBtn = document.getElementById("fit-btn");
 const nearestBtn = document.getElementById("nearest-btn");
+const kindFilterEl = document.getElementById("kind-filter");
 const collapseBtn = document.getElementById("collapse-btn");
 const panelEl = document.getElementById("panel");
 const lockHintEl = document.getElementById("lock-hint");
@@ -502,7 +503,11 @@ function makeNeedleMarker(color, opts = {}) {
   const shaftGeom = new THREE.CylinderGeometry(1.5, 0, height, 10);
   shaftGeom.translate(0, height / 2, 0); // origin at the point, not the shaft's center
   const shaft = new THREE.Mesh(shaftGeom, mat);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(18, 12, 12), mat);
+  const headGeom =
+    opts.head === "box" ? new THREE.BoxGeometry(30, 30, 30)
+    : opts.head === "octa" ? new THREE.OctahedronGeometry(22)
+    : new THREE.SphereGeometry(18, 12, 12);
+  const head = new THREE.Mesh(headGeom, mat);
   head.position.set(0, height, 0);
   const group = new THREE.Group();
   group.add(shaft, head);
@@ -513,7 +518,8 @@ function makeNeedleMarker(color, opts = {}) {
 function renderPinMarkers() {
   pinGroup.clear();
   for (const pin of pins) {
-    const marker = makeNeedleMarker(TIER_COLORS[pin.tier] || TIER_COLORS[1]);
+    if (!visibleKinds.has(kindOf(pin))) continue;
+    const marker = makeNeedleMarker(pinColor(pin), { head: PIN_KINDS[kindOf(pin)].head });
     marker.position.set(pin.x, pin.y, pin.z);
     marker.userData.pinId = pin.id;
     pinGroup.add(marker);
@@ -530,6 +536,7 @@ function warpToPin(pin) {
 function nearestPin() {
   let best = null, bestD = Infinity;
   for (const p of pins) {
+    if (!visibleKinds.has(kindOf(p))) continue;
     const d = Math.hypot(p.x - camera.position.x, p.z - camera.position.z);
     if (d < bestD) { bestD = d; best = p; }
   }
@@ -542,6 +549,7 @@ function nearestPin() {
 function renderPinList() {
   panelListEl.innerHTML = "";
   const nearby = pins
+    .filter((p) => visibleKinds.has(kindOf(p)))
     .map((p) => ({ p, d: Math.hypot(p.x - camera.position.x, p.z - camera.position.z) }))
     .filter((e) => e.d <= VICINITY_RADIUS)
     .sort((a, b) => a.d - b.d);
@@ -550,8 +558,8 @@ function renderPinList() {
     const msg = document.createElement("div");
     msg.className = "empty-hint";
     msg.textContent = pins.length
-      ? `No chests within ${Math.round(VICINITY_RADIUS / 1000)}km — ${pins.length} marked on the map. Fly closer, or use "Nearest chest".`
-      : "No chests marked yet.";
+      ? `Nothing within ${Math.round(VICINITY_RADIUS / 1000)}km — ${pins.length} marked on the map. Fly closer, or use "Warp to nearest".`
+      : "Nothing marked yet.";
     panelListEl.appendChild(msg);
     return;
   }
@@ -561,7 +569,10 @@ function renderPinList() {
     row.className = "pin-row";
     const label = document.createElement("div");
     label.className = "label";
-    label.textContent = `Chest · Tier ${pin.tier || 1} · ${Math.round(d)}m`;
+    const k = kindOf(pin);
+    label.textContent = PIN_KINDS[k].tiered
+      ? `${PIN_KINDS[k].label} · Tier ${pin.tier || 1} · ${Math.round(d)}m`
+      : `${PIN_KINDS[k].label} · ${Math.round(d)}m`;
     const votes = document.createElement("div");
     votes.className = "votes";
     votes.textContent = pin.votes ?? 0;
@@ -585,6 +596,54 @@ function renderPinList() {
 }
 
 const TIER_COLORS = { 1: 0x7fe89a, 2: 0x5ab0ff, 3: 0xffcf4f };
+
+// What a pin can mark. `tiered` pins carry the chest tier as well; the rest
+// ignore it. Extend this together with the `pins_kind_check` constraint in
+// db/migrations/001_pin_kinds.sql -- an unknown kind has no colour or label.
+const PIN_KINDS = {
+  chest:     { label: "Chest",     color: TIER_COLORS[1], head: "sphere", tiered: true },
+  jumppad:   { label: "Jump pad",  color: 0xff8ad4,       head: "box" },
+  recharger: { label: "Recharger", color: 0x66e0ff,       head: "octa" },
+};
+const DEFAULT_KIND = "chest";
+const kindOf = (pin) => (PIN_KINDS[pin.kind] ? pin.kind : DEFAULT_KIND);
+const pinColor = (pin) =>
+  kindOf(pin) === "chest" ? (TIER_COLORS[pin.tier] || TIER_COLORS[1]) : PIN_KINDS[kindOf(pin)].color;
+
+// The `kind` column ships in a migration the site owner has to run by hand, so
+// the client cannot assume it exists: writing `kind` against a database without
+// it fails EVERY save. Probed once at boot; until it succeeds the UI stays
+// chest-only and writes no `kind` at all.
+let kindSupported = false;
+const visibleKinds = new Set(Object.keys(PIN_KINDS));
+
+// One chip per kind; clicking toggles that kind's pins in the 3D view, the
+// nearby list and "Warp to nearest". Only shown once the database can actually
+// store kinds -- with a chest-only table it would be a filter over one value.
+function renderKindFilter() {
+  if (!kindSupported) return;
+  kindFilterEl.classList.remove("hidden");
+  kindFilterEl.innerHTML = "";
+  for (const [k, v] of Object.entries(PIN_KINDS)) {
+    const chip = document.createElement("button");
+    chip.className = "kind-chip" + (visibleKinds.has(k) ? " on" : "");
+    chip.style.color = "#" + v.color.toString(16).padStart(6, "0");
+    chip.innerHTML = `<span class="dot"></span><span>${v.label}</span>`;
+    chip.onclick = () => {
+      if (visibleKinds.has(k)) visibleKinds.delete(k); else visibleKinds.add(k);
+      chip.classList.toggle("on", visibleKinds.has(k));
+      refreshUI();
+    };
+    kindFilterEl.appendChild(chip);
+  }
+}
+
+async function detectKindSupport() {
+  const { error } = await supabase.from("pins").select("kind").limit(1);
+  kindSupported = !error;
+  if (!error) return;
+  console.warn("pins.kind not present -- run db/migrations/001_pin_kinds.sql to enable pin types");
+}
 
 minimapToggle.onclick = () => minimapPanel.classList.toggle("hidden");
 
@@ -629,17 +688,29 @@ function updateMinimap() {
 function openPinEditor(worldPos) {
   closePinEditor();
   let tier = 1;
+  let kind = DEFAULT_KIND;
   const box = document.createElement("div");
   box.id = "pin-editor";
   box.style.left = "50%";
   box.style.top = "50%";
   box.style.transform = "translate(-50%, -50%)";
+  const kindRow = kindSupported
+    ? `<div>What is here?</div>
+       <div class="row" id="pe-kinds">
+         ${Object.entries(PIN_KINDS).map(([k, v], i) =>
+           `<button type="button" data-kind="${k}" class="tier-btn${i === 0 ? " selected" : ""}">${v.label}</button>`
+         ).join("")}
+       </div>`
+    : "";
   box.innerHTML = `
+    ${kindRow}
+    <div id="pe-tier-block">
     <div>Chest tier (odds of better loot)</div>
     <div class="row" id="pe-tiers">
       <button type="button" data-tier="1" class="tier-btn selected">1</button>
       <button type="button" data-tier="2" class="tier-btn">2</button>
       <button type="button" data-tier="3" class="tier-btn">3</button>
+    </div>
     </div>
     <textarea id="pe-note" placeholder="Notes (floor, room, landmark...)" autofocus></textarea>
     <div class="row">
@@ -649,10 +720,18 @@ function openPinEditor(worldPos) {
   `;
   document.body.appendChild(box);
   pendingEditor = box;
-  box.querySelectorAll(".tier-btn").forEach((btn) => {
+  box.querySelectorAll("#pe-tiers .tier-btn").forEach((btn) => {
     btn.onclick = () => {
       tier = Number(btn.dataset.tier);
-      box.querySelectorAll(".tier-btn").forEach((b) => b.classList.toggle("selected", b === btn));
+      box.querySelectorAll("#pe-tiers .tier-btn").forEach((b) => b.classList.toggle("selected", b === btn));
+    };
+  });
+  box.querySelectorAll("#pe-kinds .tier-btn").forEach((btn) => {
+    btn.onclick = () => {
+      kind = btn.dataset.kind;
+      box.querySelectorAll("#pe-kinds .tier-btn").forEach((b) => b.classList.toggle("selected", b === btn));
+      // the tier only means anything for chests
+      box.querySelector("#pe-tier-block").style.display = PIN_KINDS[kind].tiered ? "" : "none";
     };
   });
   box.querySelector("#pe-save").onclick = async () => {
@@ -662,13 +741,23 @@ function openPinEditor(worldPos) {
     saveBtn.textContent = "Saving...";
     const { data, error } = await supabase
       .from("pins")
-      .insert({ ...toGame({ x: worldPos.x, y: worldPos.y, z: worldPos.z }), tier, note })
+      .insert({ ...toGame({ x: worldPos.x, y: worldPos.y, z: worldPos.z }),
+                ...(kindSupported ? { kind } : {}), tier, note })
       .select()
       .single();
     if (error) {
+      // A failed save used to be invisible outside the console, so a visitor
+      // whose insert was rejected had no way to tell it had not been recorded.
       console.error("failed to save pin", error);
       saveBtn.disabled = false;
       saveBtn.textContent = "Save";
+      let msg = box.querySelector("#pe-error");
+      if (!msg) {
+        msg = document.createElement("div");
+        msg.id = "pe-error";
+        box.insertBefore(msg, saveBtn.parentElement);
+      }
+      msg.textContent = "Could not save: " + (error.message || "unknown error");
       return;
     }
     // Guarded the same way as the realtime INSERT handler below -- the
@@ -928,6 +1017,8 @@ async function boot() {
   setAdminState(!!session);
   supabase.auth.onAuthStateChange((_event, session2) => setAdminState(!!session2));
 
+  await detectKindSupport();
+  renderKindFilter();
   await fetchPins();
   subscribeToPinChanges();
 
