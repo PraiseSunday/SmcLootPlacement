@@ -36,6 +36,7 @@ tiles, the tiles' `.gim` files, and `resolved.json` mapping building types to me
 paths.
 
 ```bash
+python3 tools/find_interiors.py   # interiors  -> tools/interior_parts.json (committed)
 python3 tools/build_chunks.py     # buildings  -> data/chunks/    + data/manifest.json
 python3 tools/build_terrain.py    # terrain    -> data/terrain/   + data/terrain_manifest.json
 ```
@@ -66,7 +67,8 @@ at that boundary. See
 | [`docs/terrain-placement.md`](docs/terrain-placement.md) | Where the tile grid comes from (pitch 1664, origin 416), read from the game's scene file; the FFT/occupancy verification, and why earlier statistical fits failed |
 | [`docs/building-rotation.md`](docs/building-rotation.md) | `house_info.json`'s `rot` is row-vector convention, so apply the transpose; why the error was invisible at yaw 0/180 |
 | [`docs/handedness.md`](docs/handedness.md) | The map really was mirrored; the proof against the game's own minimap image, and the caveat on what it does and doesn't establish |
-| [`docs/missing-data.md`](docs/missing-data.md) | What is absent and why the map is uneven — no reachable scene object graph, unexported submeshes, 27 unparsed instances |
+| [`docs/interiors.md`](docs/interiors.md) | Why some buildings were hollow shells: interiors that ship as separate models the resolver never named, and how they are found and validated |
+| [`docs/missing-data.md`](docs/missing-data.md) | What is absent and why the map is uneven — no reachable scene object graph, 6 unresolved instances |
 
 Asset format specs (`.scn`, `.gim`, the mesh exporter) live in smcStuff's
 `docs/10-asset-formats.md`; the reconstruction story is in its

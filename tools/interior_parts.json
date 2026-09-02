@@ -1,0 +1,26 @@
+{
+ "bhsc_building_bhsc_01_a": {
+  "building_bhsc_01_b": "model_new\\scene\\building\\bhsc\\building_bhsc_01_b.gim"
+ },
+ "bhsc_building_bhsc_02_a": {
+  "building_bhsc_02_b": "model_new\\scene\\building\\bhsc\\building_bhsc_02_b.gim"
+ },
+ "bhsc_building_bhsc_03_a": {
+  "building_bhsc_03_b": "model_new\\scene\\building\\bhsc\\building_bhsc_03_b.gim"
+ },
+ "djjd_building_jiudian_a01": {
+  "building_jiudian_b": "model_new\\scene\\building\\common\\building_jiudian_b.gim"
+ },
+ "djjd_building_jiudian_a02": {
+  "building_jiudian_b02": "model_new\\scene\\building\\common\\building_jiudian_b02.gim"
+ },
+ "djjd_building_jiudian_a03": {
+  "building_jiudian_b03": "model_new\\scene\\building\\common\\building_jiudian_b03.gim"
+ },
+ "msq_building_xzq_15_a": {
+  "building_xzq_15_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_15_b.gim"
+ },
+ "msq_building_xzq_18_a": {
+  "building_xzq_18_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_18_b.gim"
+ }
+}

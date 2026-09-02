@@ -31,23 +31,19 @@ cannot be placed or manipulated independently, and cannot be told apart from
 terrain except through the section table. Only the 376 loot-bearing buildings get
 full-detail geometry.
 
-## 2. Only the first submesh of each mesh is exported
+## 2. ~~Only the first submesh of each mesh is exported~~ resolved
 
-`mesh_to_obj.parse` extracts the main submesh and size-accounts the rest
-(matching NeoXtractor's own scope). Of the 310 unique building meshes we place,
-**172 have a second submesh that we drop**:
+This section used to call the dropped second submesh "the highest-value fix
+available", on the assumption that it held visual geometry — a missing wing,
+roof or facade. It does not. `offsets[1]` is the mesh's **collision block**: no
+UVs, no material split, and named as a `CollisionBlock` in the owning `.gim`. Its
+bounding box matches the visual mesh's within 5% on 143 of the 174 that have one,
+and where it differs it is larger (a coarse blocker volume, confirmed against the
+`.gim`'s own `BoundingInfo`). Nothing visible is lost by skipping it. Layout in
+smcStuff `docs/10-asset-formats.md`.
 
-| | |
-| --- | --- |
-| single-submesh (fully exported) | 138 |
-| multi-submesh (partial) | 172 |
-| dropped share of mesh bytes | median 11.4%, mean 13.3%, max 69.4% |
-
-Worst cases: `building_bangqiuchang_01_a` (69.4%), `building_ylc_qiang_01`
-(41.4%), `building_zuodao_01_d` (40.8%), `building_xzq_03_a` (37.8%). This is
-per-building, so it reads as
-individual buildings missing a wing, a roof or a facade rather than as a regional
-problem. Porting the non-main submesh path is the highest-value fix available.
+The real gap behind "this building has no interior" was a naming one, and it is
+now fixed — see [`interiors.md`](interiors.md).
 
 ## 3. 6 of 382 instances have no geometry at all
 

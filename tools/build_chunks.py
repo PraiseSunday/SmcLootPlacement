@@ -60,6 +60,15 @@ def main():
     extra_path = os.path.join(REPO_ROOT, "tools", "extra_resolved.json")
     if os.path.exists(extra_path):
         resolved.update(json.load(open(extra_path)))
+    # Interiors whose model name doesn't share the exterior's base name, so the
+    # resolver above never picks them up (see tools/find_interiors.py). They sit
+    # at the exterior's origin, so they just become extra parts of the same type.
+    interior_path = os.path.join(REPO_ROOT, "tools", "interior_parts.json")
+    if os.path.exists(interior_path):
+        for typ, parts in json.load(open(interior_path)).items():
+            if typ in resolved:
+                resolved[typ]["parts"] += [p for p in parts if p not in resolved[typ]["parts"]]
+                resolved[typ]["paths"].update(parts)
 
     mesh_cache = {}
     chunks = {}  # (cx, cz) -> {"verts": [...], "faces": [...], "buildings": 0}

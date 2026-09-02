@@ -1,0 +1,64 @@
+# Building interiors
+
+Some buildings rendered as hollow shells — the resort hotel most visibly, since
+you can walk around inside it in game. Nothing was lost in extraction: their
+interiors ship as **separate models that `house_info.json` never names**.
+
+## How interiors are modelled
+
+A building is split into parts that share a base name and a placement:
+`building_common_hospital_a` is the exterior tower, `building_common_hospital_b`
+is the ground-floor interior — inset in X/Z and only ~245 units tall against the
+tower's 2322. The resolver picks parts up by base name, so this common case has
+worked all along: 280 of the 310 meshes we place already contain interior floor
+geometry.
+
+The exception is buildings whose interior model does **not** share the exterior's
+base name. The resort hotel is `building_jiudian_a01` outside and
+`building_jiudian_b` inside — no `a01` anywhere in the interior's name — so the
+resolver never saw it and we drew the shell alone.
+
+## Finding the orphans
+
+`scene_model_inf.json` (smcStuff `build/configs/`) lists all 5282 scene models the
+game knows, with a collision type for each. That is what makes the sibling
+searchable: for each rendered part `<stem>_a<NN>`, look for an unrendered
+`<stem>_b<NN>`, then `<stem>_b`.
+
+Name matching alone is not enough — `items_yanti_l_a01` (an escalator) has an
+`items_yanti_l_b01` that is a *different, larger* object standing next to it, not
+its interior. So a candidate is accepted only if its bounding box **fits inside
+the exterior's** with 60 units of slack. Interiors are authored at the exterior's
+own origin, which is what lets them be placed with the exterior's transform, and
+is also why the containment test is meaningful.
+
+`tools/find_interiors.py` does this and writes `tools/interior_parts.json`;
+`build_chunks.py` merges those in as extra parts of the type.
+
+## Result
+
+8 building types, 15 map instances:
+
+| type | interior model |
+| --- | --- |
+| `djjd_building_jiudian_a01` / `a02` / `a03` (the resort hotel) | `building_jiudian_b` / `b02` / `b03` |
+| `bhsc_building_bhsc_01_a` / `02_a` / `03_a` | `building_bhsc_01_b` / `02_b` / `03_b` |
+| `msq_building_xzq_15_a` | `building_xzq_15_b` |
+| `msq_building_xzq_18_a` | `building_xzq_18_b` |
+
+The hotel now shows its lobby: perimeter walls, a column grid, two escalator
+pairs and the entrance doors, aligned with the shell's window bays.
+
+## What is still missing, and the fallback
+
+`x_building_kejiguan_b` is named in `scene_model_inf.json` but is not packaged in
+any `res*.npk` — the interior model was cut, so that building stays a shell.
+
+There is a second, universal source if it is ever needed: every `_a` mesh with a
+second submesh carries a **collision block** covering the whole building,
+interior included — floors, walls, columns and stair ramps (smcStuff
+`docs/10-asset-formats.md`). For the hotel it traces the same plan as
+`building_jiudian_b`. It is walkable-surface data rather than art, and it
+duplicates the exterior shell, so rendering it as-is would z-fight; it is the
+fallback for buildings whose interior model does not ship, not a replacement for
+one that does.
