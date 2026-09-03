@@ -184,24 +184,22 @@
  "ysg_building_meishuguan_01": {
   "base": "building_meishuguan",
   "parts": [
-   "building_meishuguan_a_01",
-   "building_meishuguan_a_02",
-   "building_meishuguan_a_03",
-   "building_meishuguan_a_04",
-   "building_meishuguan_b_01",
-   "building_meishuguan_b_02",
-   "building_meishuguan_b_03",
-   "building_meishuguan_b_04"
+   "x_building_meishuguan_a_01",
+   "x_building_meishuguan_a_03",
+   "x_building_meishuguan_b_01",
+   "x_building_meishuguan_b_02",
+   "x_building_meishuguan_b_03",
+   "x_building_meishuguan_b_04",
+   "building_meishuguan_a_02"
   ],
   "paths": {
-   "building_meishuguan_a_01": "model_new\\scene\\building\\common\\building_meishuguan_a_01.gim",
    "building_meishuguan_a_02": "model_new\\scene\\building\\common\\building_meishuguan_a_02.gim",
-   "building_meishuguan_a_03": "model_new\\scene\\building\\common\\building_meishuguan_a_03.gim",
-   "building_meishuguan_a_04": "model_new\\scene\\building\\common\\building_meishuguan_a_04.gim",
-   "building_meishuguan_b_01": "model_new\\scene\\building\\common\\building_meishuguan_b_01.gim",
-   "building_meishuguan_b_02": "model_new\\scene\\building\\common\\building_meishuguan_b_02.gim",
-   "building_meishuguan_b_03": "model_new\\scene\\building\\common\\building_meishuguan_b_03.gim",
-   "building_meishuguan_b_04": "model_new\\scene\\building\\common\\building_meishuguan_b_04.gim"
+   "x_building_meishuguan_a_01": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_a_01.gim",
+   "x_building_meishuguan_a_03": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_a_03.gim",
+   "x_building_meishuguan_b_01": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_b_01.gim",
+   "x_building_meishuguan_b_02": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_b_02.gim",
+   "x_building_meishuguan_b_03": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_b_03.gim",
+   "x_building_meishuguan_b_04": "model_new\\scene\\x_model\\08_nex\\x_building_meishuguan_b_04.gim"
   }
  },
  "ytq_building_youtingjianzhu_01": {

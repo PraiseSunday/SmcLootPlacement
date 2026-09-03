@@ -71,6 +71,7 @@ def main():
                 resolved[typ]["paths"].update(parts)
 
     mesh_cache = {}
+    part_centre = {}  # type -> {part: local bbox centre}, for the check below
     chunks = {}  # (cx, cz) -> {"verts": [...], "faces": [...], "buildings": 0}
     fail_resolve = set()
     fail_parse = []
@@ -108,6 +109,8 @@ def main():
             if cached is None:
                 continue
             verts, faces = cached
+            if part not in part_centre.setdefault(typ, {}):
+                part_centre[typ][part] = (min(v[1] for v in verts), max(v[1] for v in verts))
             base = len(chunk["verts"])
             for v in verts:
                 chunk["verts"].append(to_world(e["pos"], e["rot"], e["scale"], v))
@@ -118,6 +121,17 @@ def main():
         if instance_ok:
             chunk["buildings"] += 1
             used += 1
+
+    # Some models ship twice: once split by location, with every part in the whole
+    # building's frame, and once as a component library whose modules are authored
+    # around their own centre. A library module has no placement of its own, so
+    # applying the instance transform stacks it on its siblings in the middle of the
+    # building. The tell is vertical: a part that stands on the ground has its floor
+    # near y=0, while a module centred on its own origin straddles that plane evenly.
+    # See docs/missing-data.md on the meishuguan/x_model splits.
+    centred = [(typ, part) for typ, parts in sorted(part_centre.items())
+               for part, (ylo, yhi) in sorted(parts.items())
+               if yhi - ylo > 100 and abs((ylo + yhi) / 2) < 2]
 
     os.makedirs(OUT_DATA + "/chunks", exist_ok=True)
     for f in os.listdir(OUT_DATA + "/chunks"):
@@ -162,6 +176,10 @@ def main():
     print(f"instances placed: {used}/{len(house['data'])}")
     print(f"resolve failures ({len(fail_resolve)} types): {sorted(fail_resolve)}")
     print(f"parse failures: {len(fail_parse)}")
+    if centred:
+        print(f"parts authored around their own centre, stacked at the building centre ({len(centred)}):")
+        for typ, part in centred:
+            print(f"  {typ}: {part}")
     for t, p, err in fail_parse[:10]:
         print(f"  {t} [{p}]: {err}")
     print(f"chunks written: {len(manifest['chunks'])}")

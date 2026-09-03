@@ -98,18 +98,42 @@ scene model names) supplies the real spelling, and probing every known
 
 | `house_info` type | model name(s) | directory |
 | --- | --- | --- |
-| `ysg_building_meishuguan_01` | `building_meishuguan_{a,b}_{01..04}` (8 parts) | `building\common` |
+| `ysg_building_meishuguan_01` | `x_building_meishuguan_{a_01,a_03,b_01..b_04}` + `building_meishuguan_a_02` (7 parts) | `x_model\08_nex`, `building\common` |
 | `msq_building_shigong_03` | `building_common_shigong_03` | `building\common` |
 | `ytq_building_youtingjianzhu_01` | `building_common_youtingjianzhu_01{,a,b,c}` | `building\common` |
 | `xx_building_sushelou` | `building_xuexiao_sushelou_{a,b,d}` | `building\xuexiao` |
 | `hjfs_items_inside_hjjd_jizhuangxiang_03` | `items_inside_jizhuangxiang_03` | `items\inside` |
 
 The visible one is `ysg_building_meishuguan_01`, the art museum — a 3320 × 1380
-complex with a colonnaded forecourt and a basement level (parts `_a_03`/`_a_04`
-reach 291 units *below* the placement origin). Players had already pinned five
-chests inside its footprint; with no geometry to hit, every one of those pins
-fell through to the `y = 0` fallback plane. They are recorded in
-`tools/extra_resolved.json` alongside the other hand-found names.
+complex with two lobes joined by a colonnaded forecourt. Players had already
+pinned five chests inside its footprint; with no geometry to hit, every one of
+those pins fell through to the `y = 0` fallback plane. All five names are
+recorded in `tools/extra_resolved.json` alongside the other hand-found ones.
+
+### The museum ships twice, and only one of the two can be placed
+
+Picking `building_meishuguan_{a,b}_{01..04}` — the obvious eight-part match —
+put both upper storeys on top of each other in the middle of the building. That
+set is a **component library**: `_a_03` and `_a_04` are authored around their own
+centre (bbox exactly ±968 × ±291 × ±574 and ±683 × ±237 × ±430), so they carry no
+position, and applying the instance transform stacks them at the origin. The
+give-away is vertical — a part that stands on the ground has its floor at y ≈ 0,
+while these straddle that plane evenly, 291 units of geometry below it. The
+"basement" an earlier version of this doc reported was exactly that artefact.
+
+`model_new\scene\x_model\08_nex` holds the same building split **by location**
+instead: `x_building_meishuguan_a_01` is the west lobe (centre x = −604),
+`a_03` the east one (x = +727), and the four `b_*` parts are the floors under
+them. Same geometry — the two `b` sets differ by a single vertex out of 14,823 —
+but every part sits in the whole model's frame. The frames are shared, which is
+what makes mixing them safe: `x_building_meishuguan_a_02` is a 100% exact subset
+of the plain `building_meishuguan_a_02`, so the plain one is used for the ground
+sheet (it also covers the east half, which the `x_` split drops) and the `x_`
+parts for everything else.
+
+`build_chunks.py` now warns when a resolved type mixes the two kinds, so a
+library module stacked at a building's centre shows up in the build output
+instead of only in the viewer.
 
 ## 4. Cosmetic, known
 

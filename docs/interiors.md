@@ -70,9 +70,23 @@ vertices on the drawn building, the full family 80%, and the family's outline
 traces the notched north-west corner, the east block and the car-park loop that
 `building_kejiguan_d` supplies.
 
-A useful shape to remember: an `x_model\NN_nex` name is a re-export of an asset
-that also exists unsplit under its plain name, and the split is not always
-complete. Check the plain name before recording a model as cut.
+The rule to remember cuts both ways: a building can ship under an
+`x_model\NN_nex` name *and* under its plain name, and neither side is reliably
+the better one.
+
+| | science museum (`kejiguan`) | art museum (`meishuguan`) |
+| --- | --- | --- |
+| plain `building_*` | whole, placeable | component library, unplaceable |
+| `x_model\NN_nex` | partial re-split | split by location, placeable |
+| what we use | plain | `x_model`, plus one plain part |
+
+So check both names, and judge them on what the parts look like rather than on
+where they live: parts in a shared frame have bboxes offset from the origin,
+while a library module is authored around its own centre and straddles the
+ground plane evenly. `build_chunks.py` warns when a type mixes the two. And an
+`x_model` split can be missing files — `x_building_kejiguan_b` and
+`x_building_meishuguan_a_04` both are — so never record a model as cut on the
+strength of one spelling.
 
 There is a second, universal source if it is ever needed: every `_a` mesh with a
 second submesh carries a **collision block** covering the whole building,
