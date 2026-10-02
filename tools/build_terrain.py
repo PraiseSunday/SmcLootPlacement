@@ -39,8 +39,8 @@ their triangles across that grid would produce very uneven chunk sizes.
 import json, os, struct, sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SMCSTUFF = os.path.join(os.path.dirname(REPO_ROOT), "smcStuff")
-sys.path.insert(0, os.path.join(SMCSTUFF, "build"))
+sys.path.insert(0, os.path.join(REPO_ROOT, "tools", "lib"))
+HOUSE_INFO = os.path.join(REPO_ROOT, "tools", "config", "house_info.json")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import mesh_to_obj
 import gim_sections
@@ -68,7 +68,7 @@ def mirror(x, y, z):
 # every building a pair of near-coincident shells that z-fight.
 #
 # The tile's companion .gim splits the index buffer into named sections (see
-# smcStuff build/gim_sections.py), so the duplicates can be cut out exactly
+# tools/lib/gim_sections.py), so the duplicates can be cut out exactly
 # instead of guessed at geometrically. Two guards keep the cut conservative:
 #
 #   * `surface_*` sections are the ground itself and are never dropped -- some of
@@ -84,8 +84,7 @@ CONTAINMENT = 0.5
 
 def building_boxes():
     """World-space AABBs of every building instance that data/chunks renders."""
-    house = json.load(open(os.path.join(
-        SMCSTUFF, "build/configs/item_control/bw_all06/house_info.json")))
+    house = json.load(open(HOUSE_INFO))
     resolved = json.load(open(os.path.join(REPO_ROOT, "tools", "_cache", "resolved.json")))
     extra = os.path.join(REPO_ROOT, "tools", "extra_resolved.json")
     if os.path.exists(extra):

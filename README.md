@@ -91,13 +91,43 @@ seed/pins.json                current pin export (105 pins)
 db/                           schema.sql (Supabase), pins.sql (portable), migrations/
 data/                         shipped geometry: 169 building chunks, 749 terrain tiles
                               (918 .bin files, every one referenced by a manifest)
-tools/ docs/                  rebuild scripts + how placement was derived
+tools/ docs/                  rebuild scripts (+ tools/lib, tools/config) and how placement was derived
 ```
 
-`data/` is committed; you only need `tools/` to regenerate it. They require the
-extracted game assets (sibling `smcStuff` repo and the gitignored
-`tools/_cache/`), which are **not** part of this handoff -- the site does not
-need them.
+## Rebuilding the geometry (optional)
+
+`data/` is committed and the site does not need anything below. Only rebuild if
+the game's map changes.
+
+```bash
+python3 tools/build_chunks.py     # buildings -> data/chunks/  + data/manifest.json
+python3 tools/build_terrain.py    # terrain   -> data/terrain/ + data/terrain_manifest.json
+```
+
+Self-contained: the parsers (`tools/lib/`) and the building placement list
+(`tools/config/house_info.json`, from the game's configs) are in the repo. Run
+from the repo root, Python 3 only. **Verified:** a clean rebuild reproduces the
+committed `data/` byte for byte.
+
+Everything the builders need except the raw game meshes is committed:
+`tools/_cache/resolved.json` (building type -> mesh files) and
+`tools/_cache/terrain_gims/` (the terrain tiles' `.gim` files, 3 MB). The `.gim`
+files are used: each lists named sections of a terrain tile's index buffer,
+which is how `build_terrain.py` tells real ground (`surface_*`) from baked-in
+LOD copies of buildings and cuts the copies out.
+
+**Not in the repo (gitignored, 129 MB):** the raw meshes extracted from the
+game's `.npk` archives -- `tools/_cache/meshes/` (building meshes) and
+`tools/_cache/terrain_meshes/` (the 763 terrain tile meshes). Nothing here
+extracts them; you need the game install and an NeoX `.npk` extractor, then
+place the files at the same relative paths the builders read.
+
+`tools/find_interiors.py` (optional; its output `interior_parts.json` is
+committed) additionally needs the game archives and the author's `smcStuff`
+extractor (`npk_fetch`). Skip it unless new buildings need interiors.
+
+> **Filenames are grid indices**, so a rebuild can reuse a name for different
+> content. Compare with `git diff --stat data/` after rebuilding.
 
 Hosting: any static host works for the site if the pin API is reachable at
 `config.js`'s `rest.baseUrl`. Serve `data/` with `Cache-Control: no-cache`

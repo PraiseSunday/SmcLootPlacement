@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Build chunked geometry for the bw_all06 BR map from cached extracted meshes.
 
-Reads house_info.json (sibling smcStuff repo) for building placements, resolves
+Reads tools/config/house_info.json for building placements, resolves
 each building type's mesh part(s) via _cache/resolved.json, parses them with
-smcStuff's build/mesh_to_obj.py, transforms verts to world space, and buckets
+tools/lib/mesh_to_obj.py, transforms verts to world space, and buckets
 whole buildings into a coarse grid (assignment by building center — buildings
 are never split, per-chunk files are just merged triangle soup). Writes one
 compact binary blob per non-empty chunk plus a manifest.json index.
@@ -15,8 +15,8 @@ u32 face_count, then vertex_count*3 float32 (x,y,z), then face_count*3 uint32
 import json, os, struct, sys
 
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SMCSTUFF = os.path.join(os.path.dirname(REPO_ROOT), "smcStuff")
-sys.path.insert(0, os.path.join(SMCSTUFF, "build"))
+sys.path.insert(0, os.path.join(REPO_ROOT, "tools", "lib"))
+HOUSE_INFO = os.path.join(REPO_ROOT, "tools", "config", "house_info.json")
 import mesh_to_obj
 
 CACHE = os.path.join(REPO_ROOT, "tools", "_cache")
@@ -50,7 +50,7 @@ def to_world(pos, rot16, scale, local_xyz):
 
 
 def main():
-    house = json.load(open(os.path.join(SMCSTUFF, "build/configs/item_control/bw_all06/house_info.json")))
+    house = json.load(open(HOUSE_INFO))
     resolved = json.load(open(os.path.join(CACHE, "resolved.json")))
     # model_name_to_path.json (the table the resolver above draws from) is missing
     # a handful of building groups entirely -- their real .gim paths were instead

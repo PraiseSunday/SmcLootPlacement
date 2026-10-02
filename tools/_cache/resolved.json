@@ -1,0 +1,2176 @@
+{
+ "lyss_building_common_b02": {
+  "base": "building_common_b02",
+  "parts": [
+   "building_common_b02_a",
+   "building_common_b02_b"
+  ],
+  "paths": {
+   "building_common_b02_a": "model_new\\scene\\building\\common\\building_common_b02_a.gim",
+   "building_common_b02_b": "model_new\\scene\\building\\common\\building_common_b02_b.gim"
+  }
+ },
+ "lyss_building_common_b09": {
+  "base": "building_common_b09",
+  "parts": [
+   "building_common_b09_a",
+   "building_common_b09_b"
+  ],
+  "paths": {
+   "building_common_b09_a": "model_new\\scene\\building\\common\\building_common_b09_a.gim",
+   "building_common_b09_b": "model_new\\scene\\building\\common\\building_common_b09_b.gim"
+  }
+ },
+ "lyss_building_common_g02": {
+  "base": "building_common_g02",
+  "parts": [
+   "building_common_g02"
+  ],
+  "paths": {
+   "building_common_g02": "model_new\\scene\\building\\common\\building_common_g02.gim"
+  }
+ },
+ "yw_building_common_b14": {
+  "base": "building_common_b14",
+  "parts": [
+   "building_common_b14_a",
+   "building_common_b14_b"
+  ],
+  "paths": {
+   "building_common_b14_a": "model_new\\scene\\building\\common\\building_common_b14_a.gim",
+   "building_common_b14_b": "model_new\\scene\\building\\common\\building_common_b14_b.gim"
+  }
+ },
+ "yw_building_common_e01": {
+  "base": "building_common_e01",
+  "parts": [
+   "building_common_e01_a",
+   "building_common_e01_b"
+  ],
+  "paths": {
+   "building_common_e01_a": "model_new\\scene\\building\\common\\building_common_e01_a.gim",
+   "building_common_e01_b": "model_new\\scene\\building\\common\\building_common_e01_b.gim"
+  }
+ },
+ "lyss_building_common_g03": {
+  "base": "building_common_g03",
+  "parts": [
+   "building_common_g03"
+  ],
+  "paths": {
+   "building_common_g03": "model_new\\scene\\building\\common\\building_common_g03.gim"
+  }
+ },
+ "yw_building_common_a01": {
+  "base": "building_common_a01",
+  "parts": [
+   "building_common_a01_a",
+   "building_common_a01_b"
+  ],
+  "paths": {
+   "building_common_a01_a": "model_new\\scene\\building\\common\\building_common_a01_a.gim",
+   "building_common_a01_b": "model_new\\scene\\building\\common\\building_common_a01_b.gim"
+  }
+ },
+ "lyss_building_common_a01": {
+  "base": "building_common_a01",
+  "parts": [
+   "building_common_a01_a",
+   "building_common_a01_b"
+  ],
+  "paths": {
+   "building_common_a01_a": "model_new\\scene\\building\\common\\building_common_a01_a.gim",
+   "building_common_a01_b": "model_new\\scene\\building\\common\\building_common_a01_b.gim"
+  }
+ },
+ "gk_items_inside_jizhuangxiang_03": {
+  "base": "items_inside_jizhuangxiang_03",
+  "parts": [
+   "items_inside_jizhuangxiang_03"
+  ],
+  "paths": {
+   "items_inside_jizhuangxiang_03": "model_new\\scene\\items\\inside\\items_inside_jizhuangxiang_03.gim"
+  }
+ },
+ "yc_building_wenquanjie_02": {
+  "base": "building_wenquanjie_02",
+  "parts": [
+   "building_wenquanjie_02_a",
+   "building_wenquanjie_02_b"
+  ],
+  "paths": {
+   "building_wenquanjie_02_a": "model_new\\scene\\building\\common\\building_wenquanjie_02_a.gim",
+   "building_wenquanjie_02_b": "model_new\\scene\\building\\common\\building_wenquanjie_02_b.gim"
+  }
+ },
+ "yc_building_common_b06": {
+  "base": "building_common_b06",
+  "parts": [
+   "building_common_b06_a",
+   "building_common_b06_b"
+  ],
+  "paths": {
+   "building_common_b06_a": "model_new\\scene\\building\\common\\building_common_b06_a.gim",
+   "building_common_b06_b": "model_new\\scene\\building\\common\\building_common_b06_b.gim"
+  }
+ },
+ "yc_building_common_b14": {
+  "base": "building_common_b14",
+  "parts": [
+   "building_common_b14_a",
+   "building_common_b14_b"
+  ],
+  "paths": {
+   "building_common_b14_a": "model_new\\scene\\building\\common\\building_common_b14_a.gim",
+   "building_common_b14_b": "model_new\\scene\\building\\common\\building_common_b14_b.gim"
+  }
+ },
+ "yw_building_common_b05": {
+  "base": "building_common_b05",
+  "parts": [
+   "building_common_b05_a",
+   "building_common_b05_b"
+  ],
+  "paths": {
+   "building_common_b05_a": "model_new\\scene\\building\\common\\building_common_b05_a.gim",
+   "building_common_b05_b": "model_new\\scene\\building\\common\\building_common_b05_b.gim"
+  }
+ },
+ "gk_building_matou_csd": {
+  "base": "building_matou_csd",
+  "parts": [
+   "building_matou_csd_a",
+   "building_matou_csd_b"
+  ],
+  "paths": {
+   "building_matou_csd_a": "model_new\\scene\\building\\matou\\building_matou_csd_a.gim",
+   "building_matou_csd_b": "model_new\\scene\\building\\matou\\building_matou_csd_b.gim"
+  }
+ },
+ "cbd_building_segu_a07": {
+  "base": "building_segu_a07",
+  "parts": [
+   "building_segu_a07_a",
+   "building_segu_a07_b",
+   "building_segu_a07_d"
+  ],
+  "paths": {
+   "building_segu_a07_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a07_a.gim",
+   "building_segu_a07_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a07_b.gim",
+   "building_segu_a07_d": "model_new\\scene\\building\\city\\cbd\\building_segu_a07_d.gim"
+  }
+ },
+ "xx_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "cbd_building_segu_a02": {
+  "base": "building_segu_a02",
+  "parts": [
+   "building_segu_a02_a",
+   "building_segu_a02_b"
+  ],
+  "paths": {
+   "building_segu_a02_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a02_a.gim",
+   "building_segu_a02_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a02_b.gim"
+  }
+ },
+ "yc_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "yc_building_yucun_04": {
+  "base": "building_yucun_04",
+  "parts": [
+   "building_yucun_04"
+  ],
+  "paths": {
+   "building_yucun_04": "model_new\\scene\\building\\common\\building_yucun_04.gim"
+  }
+ },
+ "yc_building_yucun_05": {
+  "base": "building_yucun_05",
+  "parts": [
+   "building_yucun_05"
+  ],
+  "paths": {
+   "building_yucun_05": "model_new\\scene\\building\\common\\building_yucun_05.gim"
+  }
+ },
+ "yw_building_common_a12": {
+  "base": "building_common_a12",
+  "parts": [
+   "building_common_a12_a",
+   "building_common_a12_b"
+  ],
+  "paths": {
+   "building_common_a12_a": "model_new\\scene\\building\\common\\building_common_a12_a.gim",
+   "building_common_a12_b": "model_new\\scene\\building\\common\\building_common_a12_b.gim"
+  }
+ },
+ "yw_building_qyy_b07": {
+  "base": "building_qyy_b07",
+  "parts": [
+   "building_qyy_b07_a",
+   "building_qyy_b07_b",
+   "building_qyy_b07_c"
+  ],
+  "paths": {
+   "building_qyy_b07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_a.gim",
+   "building_qyy_b07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_b.gim",
+   "building_qyy_b07_c": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_c.gim"
+  }
+ },
+ "yc_building_yuchang_01": {
+  "base": "building_yuchang_01",
+  "parts": [
+   "building_yuchang_01_a",
+   "building_yuchang_01_b"
+  ],
+  "paths": {
+   "building_yuchang_01_a": "model_new\\scene\\building\\common\\building_yuchang_01_a.gim",
+   "building_yuchang_01_b": "model_new\\scene\\building\\common\\building_yuchang_01_b.gim"
+  }
+ },
+ "yc_building_yucun_03": {
+  "base": "building_yucun_03",
+  "parts": [
+   "building_yucun_03"
+  ],
+  "paths": {
+   "building_yucun_03": "model_new\\scene\\building\\common\\building_yucun_03.gim"
+  }
+ },
+ "ytq_building_common_qingguizhan": {
+  "base": "building_common_qingguizhan",
+  "parts": [
+   "building_common_qingguizhan_a",
+   "building_common_qingguizhan_b"
+  ],
+  "paths": {
+   "building_common_qingguizhan_a": "model_new\\scene\\building\\common\\building_common_qingguizhan_a.gim",
+   "building_common_qingguizhan_b": "model_new\\scene\\building\\common\\building_common_qingguizhan_b.gim"
+  }
+ },
+ "tlzx_building_common_qingguizhan": {
+  "base": "building_common_qingguizhan",
+  "parts": [
+   "building_common_qingguizhan_a",
+   "building_common_qingguizhan_b"
+  ],
+  "paths": {
+   "building_common_qingguizhan_a": "model_new\\scene\\building\\common\\building_common_qingguizhan_a.gim",
+   "building_common_qingguizhan_b": "model_new\\scene\\building\\common\\building_common_qingguizhan_b.gim"
+  }
+ },
+ "tlzx_building_zuodao_02": {
+  "base": "building_zuodao_02",
+  "parts": [
+   "building_zuodao_02_a",
+   "building_zuodao_02_b",
+   "building_zuodao_02_c",
+   "building_zuodao_02_d",
+   "building_zuodao_02_e",
+   "building_zuodao_02_f"
+  ],
+  "paths": {
+   "building_zuodao_02_a": "model_new\\scene\\building\\common\\building_zuodao_02_a.gim",
+   "building_zuodao_02_b": "model_new\\scene\\building\\common\\building_zuodao_02_b.gim",
+   "building_zuodao_02_c": "model_new\\scene\\building\\common\\building_zuodao_02_c.gim",
+   "building_zuodao_02_d": "model_new\\scene\\building\\common\\building_zuodao_02_d.gim",
+   "building_zuodao_02_e": "model_new\\scene\\building\\common\\building_zuodao_02_e.gim",
+   "building_zuodao_02_f": "model_new\\scene\\building\\common\\building_zuodao_02_f.gim"
+  }
+ },
+ "ytq_building_qyy_a03": {
+  "base": "building_qyy_a03",
+  "parts": [
+   "building_qyy_a03_a",
+   "building_qyy_a03_b"
+  ],
+  "paths": {
+   "building_qyy_a03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_a.gim",
+   "building_qyy_a03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_b.gim"
+  }
+ },
+ "aeft_items_yanti_guanggao_02a": {
+  "base": "items_yanti_guanggao_02a",
+  "parts": [
+   "items_yanti_guanggao_02a"
+  ],
+  "paths": {
+   "items_yanti_guanggao_02a": "model_new\\scene\\items\\common\\items_yanti_guanggao_02a.gim"
+  }
+ },
+ "aeft_items_yanti_l_a03": {
+  "base": "items_yanti_l_a03",
+  "parts": [
+   "items_yanti_l_a03"
+  ],
+  "paths": {
+   "items_yanti_l_a03": "model_new\\scene\\items\\common\\items_yanti_l_a03.gim,model_new\\scene\\building\\common\\items_yanti_l_a03.gim"
+  }
+ },
+ "jjcxgc_building_factory_j06": {
+  "base": "building_factory_j06",
+  "parts": [
+   "building_factory_j06"
+  ],
+  "paths": {
+   "building_factory_j06": "model_new\\scene\\building\\factory\\building_factory_j06.gim"
+  }
+ },
+ "jjcxgc_building_factory_j29": {
+  "base": "building_factory_j29",
+  "parts": [
+   "building_factory_j29_a",
+   "building_factory_j29_b"
+  ],
+  "paths": {
+   "building_factory_j29_a": "model_new\\scene\\building\\factory\\building_factory_j29_a.gim",
+   "building_factory_j29_b": "model_new\\scene\\building\\factory\\building_factory_j29_b.gim"
+  }
+ },
+ "aeft_building_djt_02": {
+  "base": "building_djt_02",
+  "parts": [
+   "building_djt_02"
+  ],
+  "paths": {
+   "building_djt_02": "model_new\\scene\\building\\dongjingta\\building_djt_02.gim"
+  }
+ },
+ "ytq_building_qyy_b07": {
+  "base": "building_qyy_b07",
+  "parts": [
+   "building_qyy_b07_a",
+   "building_qyy_b07_b",
+   "building_qyy_b07_c"
+  ],
+  "paths": {
+   "building_qyy_b07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_a.gim",
+   "building_qyy_b07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_b.gim",
+   "building_qyy_b07_c": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_c.gim"
+  }
+ },
+ "ytq_building_qyy_a02": {
+  "base": "building_qyy_a02",
+  "parts": [
+   "building_qyy_a02_a",
+   "building_qyy_a02_b"
+  ],
+  "paths": {
+   "building_qyy_a02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_a.gim",
+   "building_qyy_a02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_b.gim"
+  }
+ },
+ "tlzx_building_qyy_b04": {
+  "base": "building_qyy_b04",
+  "parts": [
+   "building_qyy_b04_a",
+   "building_qyy_b04_b"
+  ],
+  "paths": {
+   "building_qyy_b04_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b04_a.gim",
+   "building_qyy_b04_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b04_b.gim"
+  }
+ },
+ "tlzx_building_hospital_03": {
+  "base": "building_hospital_03",
+  "parts": [
+   "building_hospital_03_a",
+   "building_hospital_03_b",
+   "building_hospital_03_c"
+  ],
+  "paths": {
+   "building_hospital_03_a": "model_new\\scene\\building\\common\\building_hospital_03_a.gim",
+   "building_hospital_03_b": "model_new\\scene\\building\\common\\building_hospital_03_b.gim",
+   "building_hospital_03_c": "model_new\\scene\\building\\common\\building_hospital_03_c.gim"
+  }
+ },
+ "ytq_building_matou_canting": {
+  "base": "building_matou_canting",
+  "parts": [
+   "building_matou_canting_01"
+  ],
+  "paths": {
+   "building_matou_canting_01": "model_new\\scene\\building\\common\\building_matou_canting_01.gim"
+  }
+ },
+ "yly_building_common_b14": {
+  "base": "building_common_b14",
+  "parts": [
+   "building_common_b14_a",
+   "building_common_b14_b"
+  ],
+  "paths": {
+   "building_common_b14_a": "model_new\\scene\\building\\common\\building_common_b14_a.gim",
+   "building_common_b14_b": "model_new\\scene\\building\\common\\building_common_b14_b.gim"
+  }
+ },
+ "yly_building_common_b05": {
+  "base": "building_common_b05",
+  "parts": [
+   "building_common_b05_a",
+   "building_common_b05_b"
+  ],
+  "paths": {
+   "building_common_b05_a": "model_new\\scene\\building\\common\\building_common_b05_a.gim",
+   "building_common_b05_b": "model_new\\scene\\building\\common\\building_common_b05_b.gim"
+  }
+ },
+ "aeft_building_qyy_a01": {
+  "base": "building_qyy_a01",
+  "parts": [
+   "building_qyy_a01_a",
+   "building_qyy_a01_b"
+  ],
+  "paths": {
+   "building_qyy_a01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_a.gim",
+   "building_qyy_a01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_b.gim"
+  }
+ },
+ "aeft_building_qyy_b02": {
+  "base": "building_qyy_b02",
+  "parts": [
+   "building_qyy_b02_a",
+   "building_qyy_b02_b"
+  ],
+  "paths": {
+   "building_qyy_b02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_a.gim",
+   "building_qyy_b02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_b.gim"
+  }
+ },
+ "aeft_building_qyy_b06": {
+  "base": "building_qyy_b06",
+  "parts": [
+   "building_qyy_b06_a",
+   "building_qyy_b06_b"
+  ],
+  "paths": {
+   "building_qyy_b06_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b06_a.gim",
+   "building_qyy_b06_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b06_b.gim"
+  }
+ },
+ "tlzx_building_hospital_04": {
+  "base": "building_hospital_04",
+  "parts": [
+   "building_hospital_04_a",
+   "building_hospital_04_b",
+   "building_hospital_04_c"
+  ],
+  "paths": {
+   "building_hospital_04_a": "model_new\\scene\\building\\common\\building_hospital_04_a.gim",
+   "building_hospital_04_b": "model_new\\scene\\building\\common\\building_hospital_04_b.gim",
+   "building_hospital_04_c": "model_new\\scene\\building\\common\\building_hospital_04_c.gim"
+  }
+ },
+ "tlzx_building_hospital_02": {
+  "base": "building_hospital_02",
+  "parts": [
+   "building_hospital_02_a",
+   "building_hospital_02_b",
+   "building_hospital_02_c"
+  ],
+  "paths": {
+   "building_hospital_02_a": "model_new\\scene\\building\\common\\building_hospital_02_a.gim",
+   "building_hospital_02_b": "model_new\\scene\\building\\common\\building_hospital_02_b.gim",
+   "building_hospital_02_c": "model_new\\scene\\building\\common\\building_hospital_02_c.gim"
+  }
+ },
+ "aeft_building_qyy_a03": {
+  "base": "building_qyy_a03",
+  "parts": [
+   "building_qyy_a03_a",
+   "building_qyy_a03_b"
+  ],
+  "paths": {
+   "building_qyy_a03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_a.gim",
+   "building_qyy_a03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_b.gim"
+  }
+ },
+ "ytq_building_qyy_b01": {
+  "base": "building_qyy_b01",
+  "parts": [
+   "building_qyy_b01_a",
+   "building_qyy_b01_b"
+  ],
+  "paths": {
+   "building_qyy_b01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_a.gim",
+   "building_qyy_b01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_b.gim"
+  }
+ },
+ "xx_building_qyy_a03": {
+  "base": "building_qyy_a03",
+  "parts": [
+   "building_qyy_a03_a",
+   "building_qyy_a03_b"
+  ],
+  "paths": {
+   "building_qyy_a03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_a.gim",
+   "building_qyy_a03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_b.gim"
+  }
+ },
+ "ytq_building_qyy_a01": {
+  "base": "building_qyy_a01",
+  "parts": [
+   "building_qyy_a01_a",
+   "building_qyy_a01_b"
+  ],
+  "paths": {
+   "building_qyy_a01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_a.gim",
+   "building_qyy_a01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_b.gim"
+  }
+ },
+ "bhsc_building_bhsc_02_a": {
+  "base": "building_bhsc_02_a",
+  "parts": [
+   "building_bhsc_02_a"
+  ],
+  "paths": {
+   "building_bhsc_02_a": "model_new\\scene\\building\\bhsc\\building_bhsc_02_a.gim"
+  }
+ },
+ "bhsc_building_common_shigong_01": {
+  "base": "building_common_shigong_01",
+  "parts": [
+   "building_common_shigong_01"
+  ],
+  "paths": {
+   "building_common_shigong_01": "model_new\\scene\\building\\common\\building_common_shigong_01.gim"
+  }
+ },
+ "cbd_building_segu_a04": {
+  "base": "building_segu_a04",
+  "parts": [
+   "building_segu_a04_a",
+   "building_segu_a04_b",
+   "building_segu_a04_d"
+  ],
+  "paths": {
+   "building_segu_a04_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a04_a.gim",
+   "building_segu_a04_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a04_b.gim",
+   "building_segu_a04_d": "model_new\\scene\\building\\city\\cbd\\building_segu_a04_d.gim"
+  }
+ },
+ "cbd_building_segu_a05": {
+  "base": "building_segu_a05",
+  "parts": [
+   "building_segu_a05_a",
+   "building_segu_a05_b",
+   "building_segu_a05_d"
+  ],
+  "paths": {
+   "building_segu_a05_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a05_a.gim",
+   "building_segu_a05_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a05_b.gim",
+   "building_segu_a05_d": "model_new\\scene\\building\\city\\cbd\\building_segu_a05_d.gim"
+  }
+ },
+ "bhsc_building_bhsc_03_a": {
+  "base": "building_bhsc_03_a",
+  "parts": [
+   "building_bhsc_03_a"
+  ],
+  "paths": {
+   "building_bhsc_03_a": "model_new\\scene\\building\\bhsc\\building_bhsc_03_a.gim"
+  }
+ },
+ "cbd_building_segu_a06": {
+  "base": "building_segu_a06",
+  "parts": [
+   "building_segu_a06_a",
+   "building_segu_a06_b",
+   "building_segu_a06_d"
+  ],
+  "paths": {
+   "building_segu_a06_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a06_a.gim",
+   "building_segu_a06_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a06_b.gim",
+   "building_segu_a06_d": "model_new\\scene\\building\\city\\cbd\\building_segu_a06_d.gim"
+  }
+ },
+ "bsxq_building_qyy_b05": {
+  "base": "building_qyy_b05",
+  "parts": [
+   "building_qyy_b05_a",
+   "building_qyy_b05_b"
+  ],
+  "paths": {
+   "building_qyy_b05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_a.gim",
+   "building_qyy_b05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_b.gim"
+  }
+ },
+ "jdlczz_building_qyy_a05": {
+  "base": "building_qyy_a05",
+  "parts": [
+   "building_qyy_a05_a",
+   "building_qyy_a05_b"
+  ],
+  "paths": {
+   "building_qyy_a05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a05_a.gim",
+   "building_qyy_a05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a05_b.gim"
+  }
+ },
+ "bsxq_building_qyy_a08": {
+  "base": "building_qyy_a08",
+  "parts": [
+   "building_qyy_a08_a",
+   "building_qyy_a08_b"
+  ],
+  "paths": {
+   "building_qyy_a08_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_a.gim",
+   "building_qyy_a08_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_b.gim"
+  }
+ },
+ "bsxq_building_qyy_b07": {
+  "base": "building_qyy_b07",
+  "parts": [
+   "building_qyy_b07_a",
+   "building_qyy_b07_b",
+   "building_qyy_b07_c"
+  ],
+  "paths": {
+   "building_qyy_b07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_a.gim",
+   "building_qyy_b07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_b.gim",
+   "building_qyy_b07_c": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_c.gim"
+  }
+ },
+ "bsxq_building_minju_07": {
+  "base": "building_minju_07",
+  "parts": [
+   "building_minju_07_a",
+   "building_minju_07_b"
+  ],
+  "paths": {
+   "building_minju_07_a": "model_new\\scene\\building\\common\\building_minju_07_a.gim",
+   "building_minju_07_b": "model_new\\scene\\building\\common\\building_minju_07_b.gim"
+  }
+ },
+ "bsxq_building_minju_03": {
+  "base": "building_minju_03",
+  "parts": [
+   "building_minju_03_a",
+   "building_minju_03_b"
+  ],
+  "paths": {
+   "building_minju_03_a": "model_new\\scene\\building\\common\\building_minju_03_a.gim",
+   "building_minju_03_b": "model_new\\scene\\building\\common\\building_minju_03_b.gim"
+  }
+ },
+ "bsxq_building_minju_05": {
+  "base": "building_minju_05",
+  "parts": [
+   "building_minju_05_a",
+   "building_minju_05_b"
+  ],
+  "paths": {
+   "building_minju_05_a": "model_new\\scene\\building\\common\\building_minju_05_a.gim",
+   "building_minju_05_b": "model_new\\scene\\building\\common\\building_minju_05_b.gim"
+  }
+ },
+ "jdlczz_building_qyy_a04": {
+  "base": "building_qyy_a04",
+  "parts": [
+   "building_qyy_a04_a",
+   "building_qyy_a04_b"
+  ],
+  "paths": {
+   "building_qyy_a04_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a04_a.gim",
+   "building_qyy_a04_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a04_b.gim"
+  }
+ },
+ "yw_building_common_a04": {
+  "base": "building_common_a04",
+  "parts": [
+   "building_common_a04_a",
+   "building_common_a04_b"
+  ],
+  "paths": {
+   "building_common_a04_a": "model_new\\scene\\building\\common\\building_common_a04_a.gim",
+   "building_common_a04_b": "model_new\\scene\\building\\common\\building_common_a04_b.gim"
+  }
+ },
+ "bsxq_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "bsxq_building_minju_08": {
+  "base": "building_minju_08",
+  "parts": [
+   "building_minju_08_a",
+   "building_minju_08_b"
+  ],
+  "paths": {
+   "building_minju_08_a": "model_new\\scene\\building\\common\\building_minju_08_a.gim",
+   "building_minju_08_b": "model_new\\scene\\building\\common\\building_minju_08_b.gim"
+  }
+ },
+ "bsxq_building_minju_04": {
+  "base": "building_minju_04",
+  "parts": [
+   "building_minju_04_a",
+   "building_minju_04_b"
+  ],
+  "paths": {
+   "building_minju_04_a": "model_new\\scene\\building\\common\\building_minju_04_a.gim",
+   "building_minju_04_b": "model_new\\scene\\building\\common\\building_minju_04_b.gim"
+  }
+ },
+ "bsxq_building_minju_06": {
+  "base": "building_minju_06",
+  "parts": [
+   "building_minju_06_a",
+   "building_minju_06_b"
+  ],
+  "paths": {
+   "building_minju_06_a": "model_new\\scene\\building\\common\\building_minju_06_a.gim",
+   "building_minju_06_b": "model_new\\scene\\building\\common\\building_minju_06_b.gim"
+  }
+ },
+ "jdlczz_building_qyy_b01": {
+  "base": "building_qyy_b01",
+  "parts": [
+   "building_qyy_b01_a",
+   "building_qyy_b01_b"
+  ],
+  "paths": {
+   "building_qyy_b01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_a.gim",
+   "building_qyy_b01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_b.gim"
+  }
+ },
+ "bsxq_building_qyy_a06": {
+  "base": "building_qyy_a06",
+  "parts": [
+   "building_qyy_a06_a",
+   "building_qyy_a06_b"
+  ],
+  "paths": {
+   "building_qyy_a06_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_a.gim",
+   "building_qyy_a06_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_b.gim"
+  }
+ },
+ "bsxq_building_minju_10": {
+  "base": "building_minju_10",
+  "parts": [
+   "building_minju_10_a",
+   "building_minju_10_b"
+  ],
+  "paths": {
+   "building_minju_10_a": "model_new\\scene\\building\\common\\building_minju_10_a.gim",
+   "building_minju_10_b": "model_new\\scene\\building\\common\\building_minju_10_b.gim"
+  }
+ },
+ "bsxq_building_minju_11": {
+  "base": "building_minju_11",
+  "parts": [
+   "building_minju_11_a",
+   "building_minju_11_b"
+  ],
+  "paths": {
+   "building_minju_11_a": "model_new\\scene\\building\\common\\building_minju_11_a.gim",
+   "building_minju_11_b": "model_new\\scene\\building\\common\\building_minju_11_b.gim"
+  }
+ },
+ "jdlczz_building_qyy_a06": {
+  "base": "building_qyy_a06",
+  "parts": [
+   "building_qyy_a06_a",
+   "building_qyy_a06_b"
+  ],
+  "paths": {
+   "building_qyy_a06_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_a.gim",
+   "building_qyy_a06_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_b.gim"
+  }
+ },
+ "bsxq_building_minju_09": {
+  "base": "building_minju_09",
+  "parts": [
+   "building_minju_09_a",
+   "building_minju_09_b"
+  ],
+  "paths": {
+   "building_minju_09_a": "model_new\\scene\\building\\common\\building_minju_09_a.gim",
+   "building_minju_09_b": "model_new\\scene\\building\\common\\building_minju_09_b.gim"
+  }
+ },
+ "bsxq_building_common_b14": {
+  "base": "building_common_b14",
+  "parts": [
+   "building_common_b14_a",
+   "building_common_b14_b"
+  ],
+  "paths": {
+   "building_common_b14_a": "model_new\\scene\\building\\common\\building_common_b14_a.gim",
+   "building_common_b14_b": "model_new\\scene\\building\\common\\building_common_b14_b.gim"
+  }
+ },
+ "lyss_building_shenshe_08": {
+  "base": "building_shenshe_08",
+  "parts": [
+   "building_shenshe_08_a",
+   "building_shenshe_08_b"
+  ],
+  "paths": {
+   "building_shenshe_08_a": "model_new\\scene\\building\\common\\building_shenshe_08_a.gim",
+   "building_shenshe_08_b": "model_new\\scene\\building\\common\\building_shenshe_08_b.gim"
+  }
+ },
+ "bsxq_building_minju_02": {
+  "base": "building_minju_02",
+  "parts": [
+   "building_minju_02_a",
+   "building_minju_02_b"
+  ],
+  "paths": {
+   "building_minju_02_a": "model_new\\scene\\building\\common\\building_minju_02_a.gim",
+   "building_minju_02_b": "model_new\\scene\\building\\common\\building_minju_02_b.gim"
+  }
+ },
+ "hjfs_building_hospital_04_a": {
+  "base": "building_hospital_04_a",
+  "parts": [
+   "building_hospital_04_a"
+  ],
+  "paths": {
+   "building_hospital_04_a": "model_new\\scene\\building\\common\\building_hospital_04_a.gim"
+  }
+ },
+ "cbd_building_segu_a01": {
+  "base": "building_segu_a01",
+  "parts": [
+   "building_segu_a01_a",
+   "building_segu_a01_b",
+   "building_segu_a01_c"
+  ],
+  "paths": {
+   "building_segu_a01_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a01_a.gim",
+   "building_segu_a01_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a01_b.gim",
+   "building_segu_a01_c": "model_new\\scene\\building\\city\\cbd\\building_segu_a01_c.gim"
+  }
+ },
+ "yjt_building_common_b05": {
+  "base": "building_common_b05",
+  "parts": [
+   "building_common_b05_a",
+   "building_common_b05_b"
+  ],
+  "paths": {
+   "building_common_b05_a": "model_new\\scene\\building\\common\\building_common_b05_a.gim",
+   "building_common_b05_b": "model_new\\scene\\building\\common\\building_common_b05_b.gim"
+  }
+ },
+ "yjt_building_common_b07": {
+  "base": "building_common_b07",
+  "parts": [
+   "building_common_b07_a",
+   "building_common_b07_b"
+  ],
+  "paths": {
+   "building_common_b07_a": "model_new\\scene\\building\\common\\building_common_b07_a.gim",
+   "building_common_b07_b": "model_new\\scene\\building\\common\\building_common_b07_b.gim"
+  }
+ },
+ "yjt_building_common_b08": {
+  "base": "building_common_b08",
+  "parts": [
+   "building_common_b08_a",
+   "building_common_b08_b"
+  ],
+  "paths": {
+   "building_common_b08_a": "model_new\\scene\\building\\common\\building_common_b08_a.gim",
+   "building_common_b08_b": "model_new\\scene\\building\\common\\building_common_b08_b.gim"
+  }
+ },
+ "yjt_building_common_e01": {
+  "base": "building_common_e01",
+  "parts": [
+   "building_common_e01_a",
+   "building_common_e01_b"
+  ],
+  "paths": {
+   "building_common_e01_a": "model_new\\scene\\building\\common\\building_common_e01_a.gim",
+   "building_common_e01_b": "model_new\\scene\\building\\common\\building_common_e01_b.gim"
+  }
+ },
+ "yjt_building_common_b10": {
+  "base": "building_common_b10",
+  "parts": [
+   "building_common_b10_a",
+   "building_common_b10_b"
+  ],
+  "paths": {
+   "building_common_b10_a": "model_new\\scene\\building\\common\\building_common_b10_a.gim",
+   "building_common_b10_b": "model_new\\scene\\building\\common\\building_common_b10_b.gim"
+  }
+ },
+ "yjt_building_common_b11": {
+  "base": "building_common_b11",
+  "parts": [
+   "building_common_b11_a",
+   "building_common_b11_b",
+   "building_common_b11_c"
+  ],
+  "paths": {
+   "building_common_b11_a": "model_new\\scene\\building\\common\\building_common_b11_a.gim",
+   "building_common_b11_b": "model_new\\scene\\building\\common\\building_common_b11_b.gim",
+   "building_common_b11_c": "model_new\\scene\\building\\common\\building_common_b11_c.gim"
+  }
+ },
+ "yjt_building_common_b04": {
+  "base": "building_common_b04",
+  "parts": [
+   "building_common_b04_a",
+   "building_common_b04_b"
+  ],
+  "paths": {
+   "building_common_b04_a": "model_new\\scene\\building\\common\\building_common_b04_a.gim",
+   "building_common_b04_b": "model_new\\scene\\building\\common\\building_common_b04_b.gim"
+  }
+ },
+ "msq_building_xzq_02": {
+  "base": "building_xzq_02",
+  "parts": [
+   "building_xzq_02_a",
+   "building_xzq_02_b"
+  ],
+  "paths": {
+   "building_xzq_02_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_02_a.gim",
+   "building_xzq_02_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_02_b.gim"
+  }
+ },
+ "msq_building_xzq_11": {
+  "base": "building_xzq_11",
+  "parts": [
+   "building_xzq_11_a",
+   "building_xzq_11_b"
+  ],
+  "paths": {
+   "building_xzq_11_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_11_a.gim",
+   "building_xzq_11_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_11_b.gim"
+  }
+ },
+ "msq_building_xzq_10": {
+  "base": "building_xzq_10",
+  "parts": [
+   "building_xzq_10_a",
+   "building_xzq_10_b"
+  ],
+  "paths": {
+   "building_xzq_10_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_10_a.gim",
+   "building_xzq_10_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_10_b.gim"
+  }
+ },
+ "msq_building_xzq_03": {
+  "base": "building_xzq_03",
+  "parts": [
+   "building_xzq_03_a",
+   "building_xzq_03_b"
+  ],
+  "paths": {
+   "building_xzq_03_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_03_a.gim",
+   "building_xzq_03_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_03_b.gim"
+  }
+ },
+ "jxylc_building_qyy_a02": {
+  "base": "building_qyy_a02",
+  "parts": [
+   "building_qyy_a02_a",
+   "building_qyy_a02_b"
+  ],
+  "paths": {
+   "building_qyy_a02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_a.gim",
+   "building_qyy_a02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_b.gim"
+  }
+ },
+ "yjt_building_common_a12": {
+  "base": "building_common_a12",
+  "parts": [
+   "building_common_a12_a",
+   "building_common_a12_b"
+  ],
+  "paths": {
+   "building_common_a12_a": "model_new\\scene\\building\\common\\building_common_a12_a.gim",
+   "building_common_a12_b": "model_new\\scene\\building\\common\\building_common_a12_b.gim"
+  }
+ },
+ "jxylc_items_yanti_l_a03": {
+  "base": "items_yanti_l_a03",
+  "parts": [
+   "items_yanti_l_a03"
+  ],
+  "paths": {
+   "items_yanti_l_a03": "model_new\\scene\\items\\common\\items_yanti_l_a03.gim,model_new\\scene\\building\\common\\items_yanti_l_a03.gim"
+  }
+ },
+ "jxylc_items_yanti_l_a01": {
+  "base": "items_yanti_l_a01",
+  "parts": [
+   "items_yanti_l_a01"
+  ],
+  "paths": {
+   "items_yanti_l_a01": "model_new\\scene\\building\\common\\items_yanti_l_a01.gim,model_new\\scene\\items\\common\\items_yanti_l_a01.gim"
+  }
+ },
+ "jxylc_building_qyy_b01": {
+  "base": "building_qyy_b01",
+  "parts": [
+   "building_qyy_b01_a",
+   "building_qyy_b01_b"
+  ],
+  "paths": {
+   "building_qyy_b01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_a.gim",
+   "building_qyy_b01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_b.gim"
+  }
+ },
+ "yw_building_qyy_a03": {
+  "base": "building_qyy_a03",
+  "parts": [
+   "building_qyy_a03_a",
+   "building_qyy_a03_b"
+  ],
+  "paths": {
+   "building_qyy_a03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_a.gim",
+   "building_qyy_a03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_b.gim"
+  }
+ },
+ "jxylc_building_qyy_a08": {
+  "base": "building_qyy_a08",
+  "parts": [
+   "building_qyy_a08_a",
+   "building_qyy_a08_b"
+  ],
+  "paths": {
+   "building_qyy_a08_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_a.gim",
+   "building_qyy_a08_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_b.gim"
+  }
+ },
+ "yw_building_common_e04": {
+  "base": "building_common_e04",
+  "parts": [
+   "building_common_e04_a",
+   "building_common_e04_b"
+  ],
+  "paths": {
+   "building_common_e04_a": "model_new\\scene\\building\\common\\building_common_e04_a.gim",
+   "building_common_e04_b": "model_new\\scene\\building\\common\\building_common_e04_b.gim"
+  }
+ },
+ "msq_building_qyy_b05": {
+  "base": "building_qyy_b05",
+  "parts": [
+   "building_qyy_b05_a",
+   "building_qyy_b05_b"
+  ],
+  "paths": {
+   "building_qyy_b05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_a.gim",
+   "building_qyy_b05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_b.gim"
+  }
+ },
+ "yw_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "msq_building_qyy_b07": {
+  "base": "building_qyy_b07",
+  "parts": [
+   "building_qyy_b07_a",
+   "building_qyy_b07_b",
+   "building_qyy_b07_c"
+  ],
+  "paths": {
+   "building_qyy_b07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_a.gim",
+   "building_qyy_b07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_b.gim",
+   "building_qyy_b07_c": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_c.gim"
+  }
+ },
+ "hgz_building_lrsz_b02": {
+  "base": "building_lrsz_b02",
+  "parts": [
+   "building_lrsz_b02_a",
+   "building_lrsz_b02_b",
+   "building_lrsz_b02_c",
+   "building_lrsz_b02_d"
+  ],
+  "paths": {
+   "building_lrsz_b02_a": "model_new\\scene\\sd_luori\\building_lrsz_b02_a.gim",
+   "building_lrsz_b02_b": "model_new\\scene\\sd_luori\\building_lrsz_b02_b.gim",
+   "building_lrsz_b02_c": "model_new\\scene\\sd_luori\\building_lrsz_b02_c.gim",
+   "building_lrsz_b02_d": "model_new\\scene\\sd_luori\\building_lrsz_b02_d.gim"
+  }
+ },
+ "msq_building_common_d09": {
+  "base": "building_common_d09",
+  "parts": [
+   "building_common_d09_a",
+   "building_common_d09_b"
+  ],
+  "paths": {
+   "building_common_d09_a": "model_new\\scene\\building\\common\\building_common_d09_a.gim",
+   "building_common_d09_b": "model_new\\scene\\building\\common\\building_common_d09_b.gim"
+  }
+ },
+ "hgz_building_lrsz_b01": {
+  "base": "building_lrsz_b01",
+  "parts": [
+   "building_lrsz_b01_a",
+   "building_lrsz_b01_b",
+   "building_lrsz_b01_c",
+   "building_lrsz_b01_d"
+  ],
+  "paths": {
+   "building_lrsz_b01_a": "model_new\\scene\\sd_luori\\building_lrsz_b01_a.gim",
+   "building_lrsz_b01_b": "model_new\\scene\\sd_luori\\building_lrsz_b01_b.gim",
+   "building_lrsz_b01_c": "model_new\\scene\\sd_luori\\building_lrsz_b01_c.gim",
+   "building_lrsz_b01_d": "model_new\\scene\\sd_luori\\building_lrsz_b01_d.gim"
+  }
+ },
+ "hgz_building_lrsz_b03": {
+  "base": "building_lrsz_b03",
+  "parts": [
+   "building_lrsz_b03_a",
+   "building_lrsz_b03_b"
+  ],
+  "paths": {
+   "building_lrsz_b03_a": "model_new\\scene\\sd_luori\\building_lrsz_b03_a.gim",
+   "building_lrsz_b03_b": "model_new\\scene\\sd_luori\\building_lrsz_b03_b.gim"
+  }
+ },
+ "yw_building_qyy_b05": {
+  "base": "building_qyy_b05",
+  "parts": [
+   "building_qyy_b05_a",
+   "building_qyy_b05_b"
+  ],
+  "paths": {
+   "building_qyy_b05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_a.gim",
+   "building_qyy_b05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_b.gim"
+  }
+ },
+ "hzt_building_wenquanjie_06": {
+  "base": "building_wenquanjie_06",
+  "parts": [
+   "building_wenquanjie_06_a",
+   "building_wenquanjie_06_b"
+  ],
+  "paths": {
+   "building_wenquanjie_06_a": "model_new\\scene\\building\\common\\building_wenquanjie_06_a.gim",
+   "building_wenquanjie_06_b": "model_new\\scene\\building\\common\\building_wenquanjie_06_b.gim"
+  }
+ },
+ "hzt_building_wenquanjie_08": {
+  "base": "building_wenquanjie_08",
+  "parts": [
+   "building_wenquanjie_08_a",
+   "building_wenquanjie_08_b"
+  ],
+  "paths": {
+   "building_wenquanjie_08_a": "model_new\\scene\\building\\common\\building_wenquanjie_08_a.gim",
+   "building_wenquanjie_08_b": "model_new\\scene\\building\\common\\building_wenquanjie_08_b.gim"
+  }
+ },
+ "hzt_building_wenquanjie_05": {
+  "base": "building_wenquanjie_05",
+  "parts": [
+   "building_wenquanjie_05_a",
+   "building_wenquanjie_05_b"
+  ],
+  "paths": {
+   "building_wenquanjie_05_a": "model_new\\scene\\building\\common\\building_wenquanjie_05_a.gim",
+   "building_wenquanjie_05_b": "model_new\\scene\\building\\common\\building_wenquanjie_05_b.gim"
+  }
+ },
+ "lrsz_building_common_d01": {
+  "base": "building_common_d01",
+  "parts": [
+   "building_common_d01_a",
+   "building_common_d01_b"
+  ],
+  "paths": {
+   "building_common_d01_a": "model_new\\scene\\building\\common\\building_common_d01_a.gim",
+   "building_common_d01_b": "model_new\\scene\\building\\common\\building_common_d01_b.gim"
+  }
+ },
+ "lrsz_building_common_d02": {
+  "base": "building_common_d02",
+  "parts": [
+   "building_common_d02_a",
+   "building_common_d02_b"
+  ],
+  "paths": {
+   "building_common_d02_a": "model_new\\scene\\building\\common\\building_common_d02_a.gim",
+   "building_common_d02_b": "model_new\\scene\\building\\common\\building_common_d02_b.gim"
+  }
+ },
+ "hzt_building_wenquanjie_09": {
+  "base": "building_wenquanjie_09",
+  "parts": [
+   "building_wenquanjie_09_a",
+   "building_wenquanjie_09_b"
+  ],
+  "paths": {
+   "building_wenquanjie_09_a": "model_new\\scene\\building\\common\\building_wenquanjie_09_a.gim",
+   "building_wenquanjie_09_b": "model_new\\scene\\building\\common\\building_wenquanjie_09_b.gim"
+  }
+ },
+ "hzt_building_wenquanjie_07": {
+  "base": "building_wenquanjie_07",
+  "parts": [
+   "building_wenquanjie_07_a",
+   "building_wenquanjie_07_b"
+  ],
+  "paths": {
+   "building_wenquanjie_07_a": "model_new\\scene\\building\\common\\building_wenquanjie_07_a.gim",
+   "building_wenquanjie_07_b": "model_new\\scene\\building\\common\\building_wenquanjie_07_b.gim"
+  }
+ },
+ "hzt_building_common_b05": {
+  "base": "building_common_b05",
+  "parts": [
+   "building_common_b05_a",
+   "building_common_b05_b"
+  ],
+  "paths": {
+   "building_common_b05_a": "model_new\\scene\\building\\common\\building_common_b05_a.gim",
+   "building_common_b05_b": "model_new\\scene\\building\\common\\building_common_b05_b.gim"
+  }
+ },
+ "lrsz_building_common_d07": {
+  "base": "building_common_d07",
+  "parts": [
+   "building_common_d07_a",
+   "building_common_d07_b"
+  ],
+  "paths": {
+   "building_common_d07_a": "model_new\\scene\\building\\common\\building_common_d07_a.gim",
+   "building_common_d07_b": "model_new\\scene\\building\\common\\building_common_d07_b.gim"
+  }
+ },
+ "lrsz_building_common_d03": {
+  "base": "building_common_d03",
+  "parts": [
+   "building_common_d03_a",
+   "building_common_d03_b"
+  ],
+  "paths": {
+   "building_common_d03_a": "model_new\\scene\\building\\common\\building_common_d03_a.gim",
+   "building_common_d03_b": "model_new\\scene\\building\\common\\building_common_d03_b.gim"
+  }
+ },
+ "djjd_building_common_d08": {
+  "base": "building_common_d08",
+  "parts": [
+   "building_common_d08_a",
+   "building_common_d08_b"
+  ],
+  "paths": {
+   "building_common_d08_a": "model_new\\scene\\building\\common\\building_common_d08_a.gim",
+   "building_common_d08_b": "model_new\\scene\\building\\common\\building_common_d08_b.gim"
+  }
+ },
+ "djjd_building_common_e04": {
+  "base": "building_common_e04",
+  "parts": [
+   "building_common_e04_a",
+   "building_common_e04_b"
+  ],
+  "paths": {
+   "building_common_e04_a": "model_new\\scene\\building\\common\\building_common_e04_a.gim",
+   "building_common_e04_b": "model_new\\scene\\building\\common\\building_common_e04_b.gim"
+  }
+ },
+ "gly_building_qyy_b07": {
+  "base": "building_qyy_b07",
+  "parts": [
+   "building_qyy_b07_a",
+   "building_qyy_b07_b",
+   "building_qyy_b07_c"
+  ],
+  "paths": {
+   "building_qyy_b07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_a.gim",
+   "building_qyy_b07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_b.gim",
+   "building_qyy_b07_c": "model_new\\scene\\building\\city\\qyy\\building_qyy_b07_c.gim"
+  }
+ },
+ "gly_building_qyy_b01": {
+  "base": "building_qyy_b01",
+  "parts": [
+   "building_qyy_b01_a",
+   "building_qyy_b01_b"
+  ],
+  "paths": {
+   "building_qyy_b01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_a.gim",
+   "building_qyy_b01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b01_b.gim"
+  }
+ },
+ "gly_building_qyy_a05": {
+  "base": "building_qyy_a05",
+  "parts": [
+   "building_qyy_a05_a",
+   "building_qyy_a05_b"
+  ],
+  "paths": {
+   "building_qyy_a05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a05_a.gim",
+   "building_qyy_a05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a05_b.gim"
+  }
+ },
+ "gly_building_qyy_b06": {
+  "base": "building_qyy_b06",
+  "parts": [
+   "building_qyy_b06_a",
+   "building_qyy_b06_b"
+  ],
+  "paths": {
+   "building_qyy_b06_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b06_a.gim",
+   "building_qyy_b06_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b06_b.gim"
+  }
+ },
+ "gly_building_qyy_b03": {
+  "base": "building_qyy_b03",
+  "parts": [
+   "building_qyy_b03_a",
+   "building_qyy_b03_b"
+  ],
+  "paths": {
+   "building_qyy_b03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b03_a.gim",
+   "building_qyy_b03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b03_b.gim"
+  }
+ },
+ "gly_building_qyy_b05": {
+  "base": "building_qyy_b05",
+  "parts": [
+   "building_qyy_b05_a",
+   "building_qyy_b05_b"
+  ],
+  "paths": {
+   "building_qyy_b05_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_a.gim",
+   "building_qyy_b05_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b05_b.gim"
+  }
+ },
+ "gly_building_qyy_a01": {
+  "base": "building_qyy_a01",
+  "parts": [
+   "building_qyy_a01_a",
+   "building_qyy_a01_b"
+  ],
+  "paths": {
+   "building_qyy_a01_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_a.gim",
+   "building_qyy_a01_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a01_b.gim"
+  }
+ },
+ "gly_building_qyy_a03": {
+  "base": "building_qyy_a03",
+  "parts": [
+   "building_qyy_a03_a",
+   "building_qyy_a03_b"
+  ],
+  "paths": {
+   "building_qyy_a03_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_a.gim",
+   "building_qyy_a03_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a03_b.gim"
+  }
+ },
+ "gly_building_xcj_09": {
+  "base": "building_xcj_09",
+  "parts": [
+   "building_xcj_09_a",
+   "building_xcj_09_b"
+  ],
+  "paths": {
+   "building_xcj_09_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_09_a.gim",
+   "building_xcj_09_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_09_b.gim"
+  }
+ },
+ "gly_building_xcj_02": {
+  "base": "building_xcj_02",
+  "parts": [
+   "building_xcj_02_a",
+   "building_xcj_02_b"
+  ],
+  "paths": {
+   "building_xcj_02_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_02_a.gim",
+   "building_xcj_02_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_02_b.gim"
+  }
+ },
+ "gly_building_qyy_a04": {
+  "base": "building_qyy_a04",
+  "parts": [
+   "building_qyy_a04_a",
+   "building_qyy_a04_b"
+  ],
+  "paths": {
+   "building_qyy_a04_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a04_a.gim",
+   "building_qyy_a04_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a04_b.gim"
+  }
+ },
+ "gly_building_qyy_b04": {
+  "base": "building_qyy_b04",
+  "parts": [
+   "building_qyy_b04_a",
+   "building_qyy_b04_b"
+  ],
+  "paths": {
+   "building_qyy_b04_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b04_a.gim",
+   "building_qyy_b04_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b04_b.gim"
+  }
+ },
+ "gly_building_qyy_a06": {
+  "base": "building_qyy_a06",
+  "parts": [
+   "building_qyy_a06_a",
+   "building_qyy_a06_b"
+  ],
+  "paths": {
+   "building_qyy_a06_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_a.gim",
+   "building_qyy_a06_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a06_b.gim"
+  }
+ },
+ "gly_building_xcj_08": {
+  "base": "building_xcj_08",
+  "parts": [
+   "building_xcj_08_a",
+   "building_xcj_08_b"
+  ],
+  "paths": {
+   "building_xcj_08_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_08_a.gim",
+   "building_xcj_08_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_08_b.gim"
+  }
+ },
+ "gly_building_xcj_06": {
+  "base": "building_xcj_06",
+  "parts": [
+   "building_xcj_06_a",
+   "building_xcj_06_b"
+  ],
+  "paths": {
+   "building_xcj_06_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_06_a.gim",
+   "building_xcj_06_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_06_b.gim"
+  }
+ },
+ "gly_building_xcj_05": {
+  "base": "building_xcj_05",
+  "parts": [
+   "building_xcj_05_a",
+   "building_xcj_05_b"
+  ],
+  "paths": {
+   "building_xcj_05_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_05_a.gim",
+   "building_xcj_05_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_05_b.gim"
+  }
+ },
+ "xx_building_school_02": {
+  "base": "building_school_02",
+  "parts": [
+   "building_school_02_a",
+   "building_school_02_b",
+   "building_school_02_d"
+  ],
+  "paths": {
+   "building_school_02_a": "model_new\\scene\\building\\xuexiao\\building_school_02_a.gim",
+   "building_school_02_b": "model_new\\scene\\building\\xuexiao\\building_school_02_b.gim",
+   "building_school_02_d": "model_new\\scene\\building\\xuexiao\\building_school_02_d.gim"
+  }
+ },
+ "jdlczz_building_qyy_a02": {
+  "base": "building_qyy_a02",
+  "parts": [
+   "building_qyy_a02_a",
+   "building_qyy_a02_b"
+  ],
+  "paths": {
+   "building_qyy_a02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_a.gim",
+   "building_qyy_a02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_b.gim"
+  }
+ },
+ "jdlczz_building_qyy_b02": {
+  "base": "building_qyy_b02",
+  "parts": [
+   "building_qyy_b02_a",
+   "building_qyy_b02_b"
+  ],
+  "paths": {
+   "building_qyy_b02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_a.gim",
+   "building_qyy_b02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_b.gim"
+  }
+ },
+ "ysg_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "yjt_building_common_e03": {
+  "base": "building_common_e03",
+  "parts": [
+   "building_common_e03_a",
+   "building_common_e03_b"
+  ],
+  "paths": {
+   "building_common_e03_a": "model_new\\scene\\building\\common\\building_common_e03_a.gim",
+   "building_common_e03_b": "model_new\\scene\\building\\common\\building_common_e03_b.gim"
+  }
+ },
+ "gly_building_qyy_a02": {
+  "base": "building_qyy_a02",
+  "parts": [
+   "building_qyy_a02_a",
+   "building_qyy_a02_b"
+  ],
+  "paths": {
+   "building_qyy_a02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_a.gim",
+   "building_qyy_a02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a02_b.gim"
+  }
+ },
+ "gly_building_xcj_07": {
+  "base": "building_xcj_07",
+  "parts": [
+   "building_xcj_07_a",
+   "building_xcj_07_b"
+  ],
+  "paths": {
+   "building_xcj_07_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_07_a.gim",
+   "building_xcj_07_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_07_b.gim"
+  }
+ },
+ "gly_building_xcj_04": {
+  "base": "building_xcj_04",
+  "parts": [
+   "building_xcj_04_a",
+   "building_xcj_04_b"
+  ],
+  "paths": {
+   "building_xcj_04_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_04_a.gim",
+   "building_xcj_04_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_04_b.gim"
+  }
+ },
+ "gly_building_xcj_03": {
+  "base": "building_xcj_03",
+  "parts": [
+   "building_xcj_03_a",
+   "building_xcj_03_b"
+  ],
+  "paths": {
+   "building_xcj_03_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_03_a.gim",
+   "building_xcj_03_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_03_b.gim"
+  }
+ },
+ "ysg_building_common_qingguizhan": {
+  "base": "building_common_qingguizhan",
+  "parts": [
+   "building_common_qingguizhan_a",
+   "building_common_qingguizhan_b"
+  ],
+  "paths": {
+   "building_common_qingguizhan_a": "model_new\\scene\\building\\common\\building_common_qingguizhan_a.gim",
+   "building_common_qingguizhan_b": "model_new\\scene\\building\\common\\building_common_qingguizhan_b.gim"
+  }
+ },
+ "gly_building_qyy_a08": {
+  "base": "building_qyy_a08",
+  "parts": [
+   "building_qyy_a08_a",
+   "building_qyy_a08_b"
+  ],
+  "paths": {
+   "building_qyy_a08_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_a.gim",
+   "building_qyy_a08_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a08_b.gim"
+  }
+ },
+ "gly_building_qyy_b02": {
+  "base": "building_qyy_b02",
+  "parts": [
+   "building_qyy_b02_a",
+   "building_qyy_b02_b"
+  ],
+  "paths": {
+   "building_qyy_b02_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_a.gim",
+   "building_qyy_b02_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_b02_b.gim"
+  }
+ },
+ "gly_building_qyy_a07": {
+  "base": "building_qyy_a07",
+  "parts": [
+   "building_qyy_a07_a",
+   "building_qyy_a07_b"
+  ],
+  "paths": {
+   "building_qyy_a07_a": "model_new\\scene\\building\\city\\qyy\\building_qyy_a07_a.gim",
+   "building_qyy_a07_b": "model_new\\scene\\building\\city\\qyy\\building_qyy_a07_b.gim"
+  }
+ },
+ "yjt_building_common_a11": {
+  "base": "building_common_a11",
+  "parts": [
+   "building_common_a11_a",
+   "building_common_a11_b"
+  ],
+  "paths": {
+   "building_common_a11_a": "model_new\\scene\\building\\common\\building_common_a11_a.gim",
+   "building_common_a11_b": "model_new\\scene\\building\\common\\building_common_a11_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_06": {
+  "base": "building_wenquanjie_06",
+  "parts": [
+   "building_wenquanjie_06_a",
+   "building_wenquanjie_06_b"
+  ],
+  "paths": {
+   "building_wenquanjie_06_a": "model_new\\scene\\building\\common\\building_wenquanjie_06_a.gim",
+   "building_wenquanjie_06_b": "model_new\\scene\\building\\common\\building_wenquanjie_06_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_01": {
+  "base": "building_wenquanjie_01",
+  "parts": [
+   "building_wenquanjie_01_a",
+   "building_wenquanjie_01_b"
+  ],
+  "paths": {
+   "building_wenquanjie_01_a": "model_new\\scene\\building\\common\\building_wenquanjie_01_a.gim",
+   "building_wenquanjie_01_b": "model_new\\scene\\building\\common\\building_wenquanjie_01_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_02": {
+  "base": "building_wenquanjie_02",
+  "parts": [
+   "building_wenquanjie_02_a",
+   "building_wenquanjie_02_b"
+  ],
+  "paths": {
+   "building_wenquanjie_02_a": "model_new\\scene\\building\\common\\building_wenquanjie_02_a.gim",
+   "building_wenquanjie_02_b": "model_new\\scene\\building\\common\\building_wenquanjie_02_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_07": {
+  "base": "building_wenquanjie_07",
+  "parts": [
+   "building_wenquanjie_07_a",
+   "building_wenquanjie_07_b"
+  ],
+  "paths": {
+   "building_wenquanjie_07_a": "model_new\\scene\\building\\common\\building_wenquanjie_07_a.gim",
+   "building_wenquanjie_07_b": "model_new\\scene\\building\\common\\building_wenquanjie_07_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_03": {
+  "base": "building_wenquanjie_03",
+  "parts": [
+   "building_wenquanjie_03_a",
+   "building_wenquanjie_03_b"
+  ],
+  "paths": {
+   "building_wenquanjie_03_a": "model_new\\scene\\building\\common\\building_wenquanjie_03_a.gim",
+   "building_wenquanjie_03_b": "model_new\\scene\\building\\common\\building_wenquanjie_03_b.gim"
+  }
+ },
+ "yjt_building_wenquanjie_08": {
+  "base": "building_wenquanjie_08",
+  "parts": [
+   "building_wenquanjie_08_a",
+   "building_wenquanjie_08_b"
+  ],
+  "paths": {
+   "building_wenquanjie_08_a": "model_new\\scene\\building\\common\\building_wenquanjie_08_a.gim",
+   "building_wenquanjie_08_b": "model_new\\scene\\building\\common\\building_wenquanjie_08_b.gim"
+  }
+ },
+ "msq_building_xzq_07": {
+  "base": "building_xzq_07",
+  "parts": [
+   "building_xzq_07_a",
+   "building_xzq_07_b"
+  ],
+  "paths": {
+   "building_xzq_07_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_07_a.gim",
+   "building_xzq_07_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_07_b.gim"
+  }
+ },
+ "msq_building_xzq_15_a": {
+  "base": "building_xzq_15_a",
+  "parts": [
+   "building_xzq_15_a"
+  ],
+  "paths": {
+   "building_xzq_15_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_15_a.gim"
+  }
+ },
+ "msq_building_xzq_05": {
+  "base": "building_xzq_05",
+  "parts": [
+   "building_xzq_05_a",
+   "building_xzq_05_b"
+  ],
+  "paths": {
+   "building_xzq_05_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_05_a.gim",
+   "building_xzq_05_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_05_b.gim"
+  }
+ },
+ "msq_building_xzq_04": {
+  "base": "building_xzq_04",
+  "parts": [
+   "building_xzq_04_a",
+   "building_xzq_04_b"
+  ],
+  "paths": {
+   "building_xzq_04_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_04_a.gim",
+   "building_xzq_04_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_04_b.gim"
+  }
+ },
+ "msq_building_xzq_01": {
+  "base": "building_xzq_01",
+  "parts": [
+   "building_xzq_01_a",
+   "building_xzq_01_b"
+  ],
+  "paths": {
+   "building_xzq_01_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_01_a.gim",
+   "building_xzq_01_b": "model_new\\scene\\building\\city\\xzq\\building_xzq_01_b.gim"
+  }
+ },
+ "msq_building_xzq_08": {
+  "base": "building_xzq_08",
+  "parts": [
+   "building_xzq_08_a"
+  ],
+  "paths": {
+   "building_xzq_08_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_08_a.gim"
+  }
+ },
+ "cbd_building_cbd_a02": {
+  "base": "building_cbd_a02",
+  "parts": [
+   "building_cbd_a02_a",
+   "building_cbd_a02_b",
+   "building_cbd_a02_c",
+   "building_cbd_a02_d"
+  ],
+  "paths": {
+   "building_cbd_a02_a": "model_new\\scene\\building\\city\\cbd\\building_cbd_a02_a.gim",
+   "building_cbd_a02_b": "model_new\\scene\\building\\city\\cbd\\building_cbd_a02_b.gim",
+   "building_cbd_a02_c": "model_new\\scene\\building\\city\\cbd\\building_cbd_a02_c.gim",
+   "building_cbd_a02_d": "model_new\\scene\\building\\city\\cbd\\building_cbd_a02_d.gim"
+  }
+ },
+ "tlzx_x_building_common_sg_01": {
+  "base": "x_building_common_sg_01",
+  "parts": [
+   "x_building_common_sg_01"
+  ],
+  "paths": {
+   "x_building_common_sg_01": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01.gim"
+  }
+ },
+ "tlzx_x_building_kejiguan_a": {
+  "base": "x_building_kejiguan_a",
+  "parts": [
+   "x_building_kejiguan_a"
+  ],
+  "paths": {
+   "x_building_kejiguan_a": "model_new\\scene\\x_model\\05_nex\\x_building_kejiguan_a.gim"
+  }
+ },
+ "tlzx_x_building_zuodao_01": {
+  "base": "x_building_zuodao_01",
+  "parts": [
+   "x_building_zuodao_01_a",
+   "x_building_zuodao_01_a1",
+   "x_building_zuodao_01_a2",
+   "x_building_zuodao_01_d"
+  ],
+  "paths": {
+   "x_building_zuodao_01_a": "model_new\\scene\\x_model\\09_nex\\x_building_zuodao_01_a.gim",
+   "x_building_zuodao_01_a1": "model_new\\scene\\x_model\\09_nex\\x_building_zuodao_01_a1.gim",
+   "x_building_zuodao_01_a2": "model_new\\scene\\x_model\\09_nex\\x_building_zuodao_01_a2.gim",
+   "x_building_zuodao_01_d": "model_new\\scene\\x_model\\09_nex\\x_building_zuodao_01_d.gim"
+  }
+ },
+ "aeft_building_new_djt_01": {
+  "base": "building_new_djt_01",
+  "parts": [
+   "building_new_djt_01_a",
+   "building_new_djt_01_b"
+  ],
+  "paths": {
+   "building_new_djt_01_a": "model_new\\scene\\building\\dongjingta\\building_new_djt_01_a.gim",
+   "building_new_djt_01_b": "model_new\\scene\\building\\dongjingta\\building_new_djt_01_b.gim"
+  }
+ },
+ "jjcxgc_building_factory_j03": {
+  "base": "building_factory_j03",
+  "parts": [
+   "building_factory_j03_a",
+   "building_factory_j03_b",
+   "building_factory_j03_c"
+  ],
+  "paths": {
+   "building_factory_j03_a": "model_new\\scene\\building\\factory\\building_factory_j03_a.gim",
+   "building_factory_j03_b": "model_new\\scene\\building\\factory\\building_factory_j03_b.gim",
+   "building_factory_j03_c": "model_new\\scene\\building\\factory\\building_factory_j03_c.gim"
+  }
+ },
+ "jjcxgc_building_factory_j01": {
+  "base": "building_factory_j01",
+  "parts": [
+   "building_factory_j01_a",
+   "building_factory_j01_b",
+   "building_factory_j01_c"
+  ],
+  "paths": {
+   "building_factory_j01_a": "model_new\\scene\\building\\factory\\building_factory_j01_a.gim",
+   "building_factory_j01_b": "model_new\\scene\\building\\factory\\building_factory_j01_b.gim",
+   "building_factory_j01_c": "model_new\\scene\\building\\factory\\building_factory_j01_c.gim"
+  }
+ },
+ "jjcxgc_building_factory_j04": {
+  "base": "building_factory_j04",
+  "parts": [
+   "building_factory_j04_a",
+   "building_factory_j04_b"
+  ],
+  "paths": {
+   "building_factory_j04_a": "model_new\\scene\\building\\factory\\building_factory_j04_a.gim",
+   "building_factory_j04_b": "model_new\\scene\\building\\factory\\building_factory_j04_b.gim"
+  }
+ },
+ "tlzx_building_common_hospital": {
+  "base": "building_common_hospital",
+  "parts": [
+   "building_common_hospital_a",
+   "building_common_hospital_b"
+  ],
+  "paths": {
+   "building_common_hospital_a": "model_new\\scene\\building\\common\\building_common_hospital_a.gim",
+   "building_common_hospital_b": "model_new\\scene\\building\\common\\building_common_hospital_b.gim"
+  }
+ },
+ "jjcxgc_building_factory_j02": {
+  "base": "building_factory_j02",
+  "parts": [
+   "building_factory_j02_a",
+   "building_factory_j02_b"
+  ],
+  "paths": {
+   "building_factory_j02_a": "model_new\\scene\\building\\factory\\building_factory_j02_a.gim",
+   "building_factory_j02_b": "model_new\\scene\\building\\factory\\building_factory_j02_b.gim"
+  }
+ },
+ "jjcxgc_building_factory_j12": {
+  "base": "building_factory_j12",
+  "parts": [
+   "building_factory_j12_a",
+   "building_factory_j12_b"
+  ],
+  "paths": {
+   "building_factory_j12_a": "model_new\\scene\\building\\factory\\building_factory_j12_a.gim",
+   "building_factory_j12_b": "model_new\\scene\\building\\factory\\building_factory_j12_b.gim"
+  }
+ },
+ "jdlczz_building_common_huochezhan": {
+  "base": "building_common_huochezhan",
+  "parts": [
+   "building_common_huochezhan_a",
+   "building_common_huochezhan_b",
+   "building_common_huochezhan_c"
+  ],
+  "paths": {
+   "building_common_huochezhan_a": "model_new\\scene\\building\\common\\building_common_huochezhan_a.gim",
+   "building_common_huochezhan_b": "model_new\\scene\\building\\common\\building_common_huochezhan_b.gim",
+   "building_common_huochezhan_c": "model_new\\scene\\building\\common\\building_common_huochezhan_c.gim"
+  }
+ },
+ "cbd_building_segu_a03": {
+  "base": "building_segu_a03",
+  "parts": [
+   "building_segu_a03_a",
+   "building_segu_a03_b",
+   "building_segu_a03_d"
+  ],
+  "paths": {
+   "building_segu_a03_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a03_a.gim",
+   "building_segu_a03_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a03_b.gim",
+   "building_segu_a03_d": "model_new\\scene\\building\\city\\cbd\\building_segu_a03_d.gim"
+  }
+ },
+ "cbd_building_segu_a09": {
+  "base": "building_segu_a09",
+  "parts": [
+   "building_segu_a09_a",
+   "building_segu_a09_b"
+  ],
+  "paths": {
+   "building_segu_a09_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a09_a.gim",
+   "building_segu_a09_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a09_b.gim"
+  }
+ },
+ "cbd_building_segu_a08": {
+  "base": "building_segu_a08",
+  "parts": [
+   "building_segu_a08_a",
+   "building_segu_a08_b",
+   "building_segu_a08_c"
+  ],
+  "paths": {
+   "building_segu_a08_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a08_a.gim",
+   "building_segu_a08_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a08_b.gim",
+   "building_segu_a08_c": "model_new\\scene\\building\\city\\cbd\\building_segu_a08_c.gim"
+  }
+ },
+ "bhsc_building_bhsc_01_a": {
+  "base": "building_bhsc_01_a",
+  "parts": [
+   "building_bhsc_01_a"
+  ],
+  "paths": {
+   "building_bhsc_01_a": "model_new\\scene\\building\\bhsc\\building_bhsc_01_a.gim"
+  }
+ },
+ "bhsc_building_common_shigong_02": {
+  "base": "building_common_shigong_02",
+  "parts": [
+   "building_common_shigong_02"
+  ],
+  "paths": {
+   "building_common_shigong_02": "model_new\\scene\\building\\common\\building_common_shigong_02.gim"
+  }
+ },
+ "cbd_building_cbd_a03": {
+  "base": "building_cbd_a03",
+  "parts": [
+   "building_cbd_a03_a",
+   "building_cbd_a03_b",
+   "building_cbd_a03_c",
+   "building_cbd_a03_d"
+  ],
+  "paths": {
+   "building_cbd_a03_a": "model_new\\scene\\building\\city\\cbd\\building_cbd_a03_a.gim",
+   "building_cbd_a03_b": "model_new\\scene\\building\\city\\cbd\\building_cbd_a03_b.gim",
+   "building_cbd_a03_c": "model_new\\scene\\building\\city\\cbd\\building_cbd_a03_c.gim",
+   "building_cbd_a03_d": "model_new\\scene\\building\\city\\cbd\\building_cbd_a03_d.gim"
+  }
+ },
+ "cbd_building_zuodao_01": {
+  "base": "building_zuodao_01",
+  "parts": [
+   "building_zuodao_01_a",
+   "building_zuodao_01_b",
+   "building_zuodao_01_c",
+   "building_zuodao_01_d",
+   "building_zuodao_01_e",
+   "building_zuodao_01_f"
+  ],
+  "paths": {
+   "building_zuodao_01_a": "model_new\\scene\\building\\common\\building_zuodao_01_a.gim",
+   "building_zuodao_01_b": "model_new\\scene\\building\\common\\building_zuodao_01_b.gim",
+   "building_zuodao_01_c": "model_new\\scene\\building\\common\\building_zuodao_01_c.gim",
+   "building_zuodao_01_d": "model_new\\scene\\building\\common\\building_zuodao_01_d.gim",
+   "building_zuodao_01_e": "model_new\\scene\\building\\common\\building_zuodao_01_e.gim",
+   "building_zuodao_01_f": "model_new\\scene\\building\\common\\building_zuodao_01_f.gim"
+  }
+ },
+ "cbd_building_cbd_a01": {
+  "base": "building_cbd_a01",
+  "parts": [
+   "building_cbd_a01_a",
+   "building_cbd_a01_b"
+  ],
+  "paths": {
+   "building_cbd_a01_a": "model_new\\scene\\building\\city\\cbd\\building_cbd_a01_a.gim",
+   "building_cbd_a01_b": "model_new\\scene\\building\\city\\cbd\\building_cbd_a01_b.gim"
+  }
+ },
+ "xx_x_building_bangqiuchang_01": {
+  "base": "building_bangqiuchang_01",
+  "parts": [
+   "building_bangqiuchang_01_a"
+  ],
+  "paths": {
+   "building_bangqiuchang_01_a": "model_new\\scene\\building\\common\\building_bangqiuchang_01_a.gim"
+  }
+ },
+ "cbd_building_segu_a10": {
+  "base": "building_segu_a10",
+  "parts": [
+   "building_segu_a10_a",
+   "building_segu_a10_b"
+  ],
+  "paths": {
+   "building_segu_a10_a": "model_new\\scene\\building\\city\\cbd\\building_segu_a10_a.gim",
+   "building_segu_a10_b": "model_new\\scene\\building\\city\\cbd\\building_segu_a10_b.gim"
+  }
+ },
+ "msq_building_xzq_18_a": {
+  "base": "building_xzq_18_a",
+  "parts": [
+   "building_xzq_18_a"
+  ],
+  "paths": {
+   "building_xzq_18_a": "model_new\\scene\\building\\city\\xzq\\building_xzq_18_a.gim"
+  }
+ },
+ "jxylc_building_ylc_qiang_01": {
+  "base": "building_ylc_qiang_01",
+  "parts": [
+   "building_ylc_qiang_01"
+  ],
+  "paths": {
+   "building_ylc_qiang_01": "model_new\\scene\\building\\building_ylc\\building_ylc_qiang_01.gim"
+  }
+ },
+ "msq_building_dxgc_02": {
+  "base": "building_dxgc_02",
+  "parts": [
+   "building_dxgc_02_a",
+   "building_dxgc_02_b"
+  ],
+  "paths": {
+   "building_dxgc_02_a": "model_new\\scene\\building\\common\\building_dxgc_02_a.gim",
+   "building_dxgc_02_b": "model_new\\scene\\building\\common\\building_dxgc_02_b.gim"
+  }
+ },
+ "msq_building_dxgc_01": {
+  "base": "building_dxgc_01",
+  "parts": [
+   "building_dxgc_01_a",
+   "building_dxgc_01_b"
+  ],
+  "paths": {
+   "building_dxgc_01_a": "model_new\\scene\\building\\common\\building_dxgc_01_a.gim",
+   "building_dxgc_01_b": "model_new\\scene\\building\\common\\building_dxgc_01_b.gim"
+  }
+ },
+ "hgz_building_lrsz_a02": {
+  "base": "building_lrsz_a02",
+  "parts": [
+   "building_lrsz_a02_a",
+   "building_lrsz_a02_b"
+  ],
+  "paths": {
+   "building_lrsz_a02_a": "model_new\\scene\\sd_luori\\building_lrsz_a02_a.gim",
+   "building_lrsz_a02_b": "model_new\\scene\\sd_luori\\building_lrsz_a02_b.gim"
+  }
+ },
+ "msq_x_building_common_sg_01": {
+  "base": "x_building_common_sg_01",
+  "parts": [
+   "x_building_common_sg_01"
+  ],
+  "paths": {
+   "x_building_common_sg_01": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_01.gim"
+  }
+ },
+ "msq_x_building_common_sg_02": {
+  "base": "x_building_common_sg_02",
+  "parts": [
+   "x_building_common_sg_02"
+  ],
+  "paths": {
+   "x_building_common_sg_02": "model_new\\scene\\x_model\\08_nex\\x_building_common_sg_02.gim"
+  }
+ },
+ "hgz_building_lrsz_a01": {
+  "base": "building_lrsz_a01",
+  "parts": [
+   "building_lrsz_a01_a",
+   "building_lrsz_a01_b",
+   "building_lrsz_a01_c"
+  ],
+  "paths": {
+   "building_lrsz_a01_a": "model_new\\scene\\sd_luori\\building_lrsz_a01_a.gim",
+   "building_lrsz_a01_b": "model_new\\scene\\sd_luori\\building_lrsz_a01_b.gim",
+   "building_lrsz_a01_c": "model_new\\scene\\sd_luori\\building_lrsz_a01_c.gim"
+  }
+ },
+ "djjd_building_jiudian_a03": {
+  "base": "building_jiudian_a03",
+  "parts": [
+   "building_jiudian_a03"
+  ],
+  "paths": {
+   "building_jiudian_a03": "model_new\\scene\\building\\common\\building_jiudian_a03.gim"
+  }
+ },
+ "djjd_building_jiudian_a01": {
+  "base": "building_jiudian_a01",
+  "parts": [
+   "building_jiudian_a01"
+  ],
+  "paths": {
+   "building_jiudian_a01": "model_new\\scene\\building\\common\\building_jiudian_a01.gim"
+  }
+ },
+ "djjd_building_jiudian_a02": {
+  "base": "building_jiudian_a02",
+  "parts": [
+   "building_jiudian_a02"
+  ],
+  "paths": {
+   "building_jiudian_a02": "model_new\\scene\\building\\common\\building_jiudian_a02.gim"
+  }
+ },
+ "szt_building_yishiting_01": {
+  "base": "building_yishiting_01",
+  "parts": [
+   "building_yishiting_01",
+   "building_yishiting_01_b"
+  ],
+  "paths": {
+   "building_yishiting_01": "model_new\\scene\\building\\common\\building_yishiting_01.gim",
+   "building_yishiting_01_b": "model_new\\scene\\building\\common\\building_yishiting_01_b.gim"
+  }
+ },
+ "xx_building_school_01": {
+  "base": "building_school_01",
+  "parts": [
+   "building_school_01_a",
+   "building_school_01_b"
+  ],
+  "paths": {
+   "building_school_01_a": "model_new\\scene\\building\\xuexiao\\building_school_01_a.gim",
+   "building_school_01_b": "model_new\\scene\\building\\xuexiao\\building_school_01_b.gim"
+  }
+ },
+ "gly_building_xcj_01": {
+  "base": "building_xcj_01",
+  "parts": [
+   "building_xcj_01_a",
+   "building_xcj_01_b",
+   "building_xcj_01_c"
+  ],
+  "paths": {
+   "building_xcj_01_a": "model_new\\scene\\building\\city\\xcj\\building_xcj_01_a.gim",
+   "building_xcj_01_b": "model_new\\scene\\building\\city\\xcj\\building_xcj_01_b.gim",
+   "building_xcj_01_c": "model_new\\scene\\building\\city\\xcj\\building_xcj_01_c.gim"
+  }
+ }
+}

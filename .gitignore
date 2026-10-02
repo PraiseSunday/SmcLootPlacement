@@ -1,4 +1,5 @@
-tools/_cache/
+tools/_cache/meshes/
+tools/_cache/terrain_meshes/
 __pycache__/
 *.pyc
 .venv/
