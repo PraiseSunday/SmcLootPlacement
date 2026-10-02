@@ -1,86 +1,113 @@
 # SMC Loot Placement
 
-A crowdsourced chest/loot map for **Super Mecha Champions**' Battle Royale map
-(`bw_all06`), rendered from the game's own geometry rather than a drawn image.
-Players fly the map in 3D, drop pins where they actually find chests, and vote on
-each other's pins. Static site — GitHub Pages plus Supabase for the pin data.
+A crowdsourced loot map for **Super Mecha Champions**' Battle Royale map
+(`bw_all06`), rendered in 3D from the game's own geometry. Players fly the map,
+drop pins (chests, jump pads, rechargers) and vote on each other's pins.
+Pure static front end (three.js) plus a tiny pin API.
 
-## Why real geometry
-
-A flat map image cannot answer "which floor" or "which side of the building",
-which is exactly what loot pins need. So the site renders the real thing:
-
-- **763 terrain tiles** — ground, roads, bridges and scenery, from the game's LOD
-  chunks
-- **382 buildings** — full-detail meshes, individually placed and rotated
-
-Both are streamed in around the camera, so the whole 87 MB of geometry is never
-loaded at once.
-
-## Running it locally
+## Run it (30 seconds)
 
 ```bash
-python3 -m http.server 8934      # from the repo root
-# then open http://localhost:8934/index.html
+python3 server/server.py          # needs only Python 3, no installs
+# open http://localhost:8934
 ```
 
-The `data/` directory is committed, so the site runs as-is. You only need the
-build tools below if you want to regenerate it.
+This serves the site **and** the pin API, stores pins in `server/pins.db`
+(SQLite, created on first run) and seeds it with the 105 pins in
+`seed/pins.json`. Options: `PORT=8080`, `DB_PATH=...`, `ADMIN_TOKEN=...`.
 
-## Rebuilding the geometry
+**Admin** (deleting pins): click *Admin sign-in* and enter the token
+(`ADMIN_TOKEN`, default `admin` -- **change it before hosting publicly**).
+Players can add and vote freely; a pin auto-deletes at -10 votes.
 
-The builders read the extracted game assets through the sibling
-[`smcStuff`](../smcStuff) repo, which must sit next to this one. They rely on
-`tools/_cache/` (gitignored): extracted `.mesh` files for buildings and terrain
-tiles, the tiles' `.gim` files, and `resolved.json` mapping building types to mesh
-paths.
+**Where pins live:** in `server/pins.db` (SQLite, gitignored). `seed/pins.json`
+is only the starting data, loaded when the DB is empty. **Back up / move pins:**
+`python3 server/export_pins.py > pins-backup.json` (same format as the seed;
+to restore, delete `pins.db`, drop the file at `seed/pins.json`, restart).
 
-```bash
-python3 tools/find_interiors.py   # interiors  -> tools/interior_parts.json (committed)
-python3 tools/build_chunks.py     # buildings  -> data/chunks/    + data/manifest.json
-python3 tools/build_terrain.py    # terrain    -> data/terrain/   + data/terrain_manifest.json
+**Spam protection:** writes are limited to 30/min per IP (`RATE_LIMIT=0`
+disables; behind a reverse proxy set `TRUST_PROXY=1` so the real client IP is
+used). Admin requests are exempt.
+
+Needs internet in the browser for three.js (loaded from unpkg, see the import
+map in `index.html`).
+
+## Using another database
+
+The front end only talks to `db.js`, which loads one backend chosen in
+`config.js`:
+
+| backend | what it is |
+|---|---|
+| `rest` (default) | any server speaking the 5-endpoint contract at the top of `backends/rest.js`. `server/server.py` is the reference implementation. |
+| `supabase` | set `url`/`key` in `config.js`, run `db/schema.sql` (set the admin UID inside). |
+
+To use Postgres/MySQL/Mongo/etc.: create the table from `db/pins.sql`, load
+`seed/pins.json`, and change the 5 queries in `server/server.py` (or write the
+same endpoints in any language). Nothing in the front end changes. To go
+fully custom, add a file in `backends/` exporting `createStore()` with the same
+methods as `backends/rest.js` and select it in `db.js`.
+
+Pin rows: `id, x, y, z, kind, tier, note, votes, created_at`.
+
+## Coordinates -- read this before touching positions
+
+- **Pins are stored in true game coordinates** (the same X/Y/Z the game uses;
+  Y is up, units are game units). The on-screen readout shows the same values.
+- The 3D viewer renders **mirrored in Z** (the game's engine is left-handed,
+  three.js is right-handed). `toViewer` / `toGame` in `app.js` just negate Z at
+  the DB boundary. If you add a new feature that reads or writes positions,
+  convert there -- never store viewer coordinates.
+- Geometry in `data/` is already in *viewer* space (Z negated at build time),
+  so it needs no conversion at runtime.
+- **Where the numbers come from** (all derived from the game's own files, no
+  hand-tuning):
+  - *Terrain*: 763 tiles; tile `(xi, yi)` is centred at
+    `(xi*1664 + 416, yi*1664 + 416)`, from the map's scene file.
+  - *Buildings*: 382 instances with position / rotation / scale from the game's
+    `house_info.json`. Its rotation is row-vector convention, so the
+    **transpose** is applied (invisible at yaw 0/180, wrong at 90/270).
+  - *Interiors* ship as separate models; `tools/interior_parts.json` lists them.
+  - Map is complete: 382/382 buildings placed.
+- Details and proofs: `docs/` (`terrain-placement`, `building-rotation`,
+  `handedness`, `interiors`, `missing-data`). Optional reading.
+
+## Using the geometry on its own
+
+`data/manifest.json` (buildings, 2500-unit cells) and `data/terrain_manifest.json`
+(terrain tiles) list every `.bin` with its bounding box. Each `.bin` is
+little-endian: `"SLPC"` magic, `u32` vertex count, `u32` face count,
+`vertex_count x 3` float32 positions, `face_count x 3` uint32 indices. Positions
+are already in world space, in the mirrored-Z viewer space described above
+(negate Z to get game coordinates). No other transform is needed.
+
+## Files
+
+```
+index.html app.js style.css   the site
+config.js db.js backends/     pin-storage selection + adapters
+server/server.py              local server + SQLite pin API
+seed/pins.json                current pin export (105 pins)
+db/                           schema.sql (Supabase), pins.sql (portable), migrations/
+data/                         shipped geometry: 169 building chunks, 749 terrain tiles
+                              (918 .bin files, every one referenced by a manifest)
+tools/ docs/                  rebuild scripts + how placement was derived
 ```
 
-Both emit a compact binary blob per cell (`SLPC` magic, little-endian: `u32`
-vertex count, `u32` face count, then `vertex_count × 3` float32 positions and
-`face_count × 3` uint32 indices) plus a JSON manifest of bounding boxes used for
-streaming.
+`data/` is committed; you only need `tools/` to regenerate it. They require the
+extracted game assets (sibling `smcStuff` repo and the gitignored
+`tools/_cache/`), which are **not** part of this handoff -- the site does not
+need them.
 
-> **Filenames are grid indices**, so a rebuild can reuse a filename for entirely
-> different content. Neither `python -m http.server` nor GitHub Pages sends
-> `Cache-Control` or `ETag`, so the app requests all data with `cache: "no-cache"`
-> — without that, a browser serves stale chunks and the map looks broken in a way
-> that mimics a placement bug.
+Hosting: any static host works for the site if the pin API is reachable at
+`config.js`'s `rest.baseUrl`. Serve `data/` with `Cache-Control: no-cache`
+(chunk filenames are grid indices and get reused on rebuild; the app already
+sends `no-cache` on its requests, and `server.py` sets it).
 
-## Coordinates
+## Licence / redistribution
 
-The viewer renders **mirrored in Z** relative to the game, because NeoX is
-left-handed and three.js is not. The database and the on-screen coordinate
-readout use **true game coordinates**; `toViewer` / `toGame` in `app.js` flip Z
-at that boundary. See
-[`docs/handedness.md`](docs/handedness.md).
-
-## Documentation
-
-| Doc | What's inside |
-|-----|---------------|
-| [`docs/terrain-placement.md`](docs/terrain-placement.md) | Where the tile grid comes from (pitch 1664, origin 416), read from the game's scene file; the FFT/occupancy verification, and why earlier statistical fits failed |
-| [`docs/building-rotation.md`](docs/building-rotation.md) | `house_info.json`'s `rot` is row-vector convention, so apply the transpose; why the error was invisible at yaw 0/180 |
-| [`docs/handedness.md`](docs/handedness.md) | The map really was mirrored; the proof against the game's own minimap image, and the caveat on what it does and doesn't establish |
-| [`docs/interiors.md`](docs/interiors.md) | Why some buildings were hollow shells: interiors that ship as separate models the resolver never named, and how they are found and validated |
-| [`docs/missing-data.md`](docs/missing-data.md) | What is absent and why the map is uneven — no reachable scene object graph, 6 unresolved instances |
-
-Asset format specs (`.scn`, `.gim`, the mesh exporter) live in smcStuff's
-`docs/10-asset-formats.md`; the reconstruction story is in its
-`docs/archaeology/bw-all06-map-reconstruction.md`.
-
-## Layout
-
-```
-index.html  app.js  style.css   the site
-admin-setup.html                one-off admin helper
-db/schema.sql                   Supabase tables + row-level security policies
-data/                           committed geometry (chunks, terrain, manifests)
-tools/                          the builders
-docs/                           how the placement was derived
-```
+The geometry in `data/` is derived from **Super Mecha Champions' game assets**,
+which belong to the game's publisher. This project is an unofficial fan tool;
+the code is yours to reuse, but check the publisher's terms before hosting
+publicly or redistributing `data/`. The extracted source assets are
+deliberately not included.

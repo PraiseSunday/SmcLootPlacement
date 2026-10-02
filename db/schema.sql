@@ -1,8 +1,7 @@
--- Run once in the Supabase project's SQL editor.
--- Before running: sign up / sign in as the admin account in Supabase Auth
--- first (Authentication -> Users), then after running this, replace the
--- placeholder UID below with that user's UID and re-run just the CREATE
--- POLICY statement for pins_delete_admin_only.
+-- SUPABASE backend only (config.js backend: "supabase"). Run once in the SQL
+-- editor. Create the admin user first (Authentication -> Users), then replace
+-- ADMIN_USER_UID below with that user's UID. For plain Postgres or any other
+-- DB, use db/pins.sql instead and the REST backend (see README).
 
 create extension if not exists "pgcrypto";
 
@@ -33,9 +32,9 @@ create policy "pins_insert_all" on public.pins
 -- table itself has no open UPDATE policy). This stops random visitors from
 -- editing an existing pin's position/tier/note after the fact.
 
--- Delete is restricted to a single admin account (PraiseSunday's admin UID).
+-- Delete is restricted to a single admin account.
 create policy "pins_delete_admin_only" on public.pins
-  for delete using (auth.uid() = '1bbaadcd-14c6-4bf5-9152-c821de38c447');
+  for delete using (auth.uid() = 'ADMIN_USER_UID');
 
 create or replace function public.increment_vote(pin_id uuid, delta integer)
 returns void

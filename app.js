@@ -1,12 +1,6 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
-import { createClient } from "@supabase/supabase-js";
-
-// Anon/publishable key -- meant to be public client-side, RLS policies (see
-// db/schema.sql) are what actually enforce who can insert/vote/delete.
-const SUPABASE_URL = "https://ogcvmjrlamxjnkhuoupw.supabase.co";
-const SUPABASE_KEY = "sb_publishable_xHVhPIiRHm9ClnvCQcw63Q_jtgBZyZW";
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+import store from "./db.js"; // pin storage backend, chosen in config.js
 
 // Horizontal (X/Z) only, deliberately -- altitude shouldn't affect what's
 // streamed in, since flying up over a spot doesn't make its surroundings any
@@ -446,12 +440,12 @@ const toViewer = flipZ;
 const toGame = flipZ;
 
 async function fetchPins() {
-  const { data, error } = await supabase.from("pins").select("*");
-  if (error) {
+  try {
+    pins = (await store.list()).map(toViewer);
+  } catch (error) {
     console.error("failed to load pins", error);
     return;
   }
-  pins = data.map(toViewer);
   refreshUI();
 }
 
@@ -461,34 +455,17 @@ async function fetchPins() {
 // alongside the vote. Delete stays admin-only, enforced by RLS regardless of
 // what the client sends -- the UI just also hides the button for non-admins.
 function subscribeToPinChanges() {
-  supabase
-    .channel("pins-changes")
-    .on("postgres_changes", { event: "INSERT", schema: "public", table: "pins" }, (payload) => {
-      if (!pins.some((p) => p.id === payload.new.id)) pins.push(toViewer(payload.new));
-      refreshUI();
-    })
-    .on("postgres_changes", { event: "UPDATE", schema: "public", table: "pins" }, (payload) => {
-      const i = pins.findIndex((p) => p.id === payload.new.id);
-      if (i >= 0) pins[i] = toViewer(payload.new);
-      refreshUI();
-    })
-    .on("postgres_changes", { event: "DELETE", schema: "public", table: "pins" }, (payload) => {
-      pins = pins.filter((p) => p.id !== payload.old.id);
-      refreshUI();
-    })
-    .subscribe();
+  store.subscribe(fetchPins);
 }
 
 async function voteOnPin(pin, delta) {
   pin.votes = (pin.votes || 0) + delta; // optimistic; realtime reconciles the real value
   refreshUI();
-  const { error } = await supabase.rpc("increment_vote", { pin_id: pin.id, delta });
-  if (error) console.error("vote failed", error);
+  try { await store.vote(pin.id, delta); } catch (error) { console.error("vote failed", error); }
 }
 
 async function deletePin(pin) {
-  const { error } = await supabase.from("pins").delete().eq("id", pin.id);
-  if (error) console.error("delete failed (admin sign-in required)", error);
+  try { await store.remove(pin.id); } catch (error) { console.error("delete failed (admin sign-in required)", error); }
 }
 
 // A cone/sphere blob's centroid doesn't tell you where its exact anchor
@@ -641,11 +618,10 @@ function renderKindFilter() {
 }
 
 async function detectKindSupport() {
-  const { error } = await supabase.from("pins").select("kind").limit(1);
-  kindSupported = !error;
+  kindSupported = await store.hasKind();
   kindProbed = true;
   renderKindSetupHint();
-  if (!error) return;
+  if (kindSupported) return;
   console.warn("pins.kind not present -- run db/migrations/001_pin_kinds.sql to enable pin types");
 }
 
@@ -749,12 +725,11 @@ function openPinEditor(worldPos) {
     const saveBtn = box.querySelector("#pe-save");
     saveBtn.disabled = true;
     saveBtn.textContent = "Saving...";
-    const { data, error } = await supabase
-      .from("pins")
-      .insert({ ...toGame({ x: worldPos.x, y: worldPos.y, z: worldPos.z }),
-                ...(kindSupported ? { kind } : {}), tier, note })
-      .select()
-      .single();
+    let data, error;
+    try {
+      data = await store.insert({ ...toGame({ x: worldPos.x, y: worldPos.y, z: worldPos.z }),
+                                  ...(kindSupported ? { kind } : {}), tier, note });
+    } catch (e) { error = e; }
     if (error) {
       // A failed save used to be invisible outside the console, so a visitor
       // whose insert was rejected had no way to tell it had not been recorded.
@@ -853,9 +828,12 @@ function setAdminState(on) {
   renderPinList();
 }
 
+adminEmailEl.style.display = store.needsEmail ? "" : "none";
+adminPasswordEl.placeholder = store.needsEmail ? adminPasswordEl.placeholder : "Admin token";
+
 adminBtn.onclick = async () => {
   if (isAdmin) {
-    await supabase.auth.signOut();
+    await store.auth.signOut();
     return;
   }
   adminErrorEl.textContent = "";
@@ -874,8 +852,9 @@ adminSigninBtn.onclick = async () => {
   const email = adminEmailEl.value.trim();
   const password = adminPasswordEl.value;
   adminErrorEl.textContent = "";
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error) {
+  try {
+    await store.auth.signIn(email, password);
+  } catch (error) {
     adminErrorEl.textContent = error.message;
     return;
   }
@@ -1024,9 +1003,8 @@ async function boot() {
   onResize();
   flyToOverview();
 
-  const { data: { session } } = await supabase.auth.getSession();
-  setAdminState(!!session);
-  supabase.auth.onAuthStateChange((_event, session2) => setAdminState(!!session2));
+  setAdminState(await store.auth.isAdmin());
+  store.auth.onChange(setAdminState);
 
   await detectKindSupport();
   renderKindFilter();
